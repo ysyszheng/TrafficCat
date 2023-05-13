@@ -3,6 +3,7 @@
 #include "utils/utils.h"
 #include <sys/types.h>
 
+
 std::vector<packet_struct *> Sniffer::pkt; // packet
 View *Sniffer::view;                       // view
 
