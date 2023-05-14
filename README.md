@@ -1,1 +1,12 @@
-## 基于机器学习的网络流量分析审计系统
+TrafficCar
+=====
+
+Machine Learning Based Network Traffic Analysis and Audit System
+
+Dependencies
+-----
+```bash
+$> sudo apt install build-essential
+$> sudo apt install qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools
+$> sudo apt install libpcap-dev
+```
