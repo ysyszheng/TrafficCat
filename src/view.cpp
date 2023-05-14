@@ -183,6 +183,8 @@ void View::add_pkt(const packet_struct *packet, bool flag) {
   TableModel->setItem(index, 6, item);
   setColor(packet, item);
 
+  table->scrollToBottom();
+
   index++;
 }
 
