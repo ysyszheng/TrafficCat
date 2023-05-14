@@ -1,4 +1,4 @@
 #! /bin/bash
-qmake -o Makefile ./sniffer.pro
+qmake -o Makefile ./trafficat.pro
 make
-chmod +x ./bin/sniffer
+chmod +x ./bin/trafficat
