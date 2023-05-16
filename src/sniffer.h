@@ -25,6 +25,7 @@ protected:
   flag_t status;                           // status {start, stop, restart}
   static std::vector<packet_struct *> pkt; // packet
   static View *view;                       // view
+  pcap_dumper_t *dumpfile;
 
 public:
   Sniffer();

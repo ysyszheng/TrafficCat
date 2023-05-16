@@ -1,6 +1,7 @@
 #include "sniffer.h"
 #include "utils/hdr.h"
 #include "utils/utils.h"
+#include <pcap/pcap.h>
 #include <sys/types.h>
 
 
@@ -70,12 +71,19 @@ void Sniffer::getView(View *viewObj) { view = viewObj; }
 
 void Sniffer::sniff() {
   // status = Start;
+  std::string fn;
+  const char *fn_c;
   while (TRUE) {
     if (status == Start) {
-      pcap_dispatch(handle, -1, get_packet, NULL);
+      fn_c = fn.c_str();
+      dumpfile = pcap_dump_open(handle, fn_c);
+      pcap_dispatch(handle, -1, get_packet, (unsigned char *)dumpfile);
+      pcap_dump_close(dumpfile);
     } else if (status == Stop) {
       LOG("Stop");
+      fn = "../data/" + currentDataTime() + ".pcap";
     } else {
+      fn = "../data/" + currentDataTime() + ".pcap";
       LOG("Initiating...");
     }
   }
