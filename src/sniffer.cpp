@@ -14,6 +14,9 @@ Sniffer::Sniffer() {
   dumper = NULL;
   status = Init;
   findAllDevs();
+  std::string fn = "../data/" + currentDataTime() + ".pcap";
+  fn_c = fn.c_str();
+  dumpfile = pcap_dump_open(handle, fn_c);
 }
 
 Sniffer::~Sniffer() {
@@ -21,6 +24,7 @@ Sniffer::~Sniffer() {
     pcap_freealldevs(allDev_ptr);
   if (handle)
     pcap_close(handle);
+  pcap_dump_close(dumpfile);
 }
 
 bool Sniffer::findAllDevs() {
@@ -71,19 +75,12 @@ void Sniffer::getView(View *viewObj) { view = viewObj; }
 
 void Sniffer::sniff() {
   // status = Start;
-  std::string fn;
-  const char *fn_c;
   while (TRUE) {
     if (status == Start) {
-      fn_c = fn.c_str();
-      dumpfile = pcap_dump_open(handle, fn_c);
       pcap_dispatch(handle, -1, get_packet, (unsigned char *)dumpfile);
-      pcap_dump_close(dumpfile);
     } else if (status == Stop) {
       LOG("Stop");
-      fn = "../data/" + currentDataTime() + ".pcap";
     } else {
-      fn = "../data/" + currentDataTime() + ".pcap";
       LOG("Initiating...");
     }
   }
@@ -91,7 +88,7 @@ void Sniffer::sniff() {
 
 void Sniffer::get_packet(u_char *args, const struct pcap_pkthdr *header,
                          const u_char *packet) {
-
+  pcap_dump(args, header, packet);
   static size_t cnt = 0;
 
   packet_struct *pkt_p = new packet_struct;

@@ -26,6 +26,7 @@ protected:
   static std::vector<packet_struct *> pkt; // packet
   static View *view;                       // view
   pcap_dumper_t *dumpfile;
+  const char *fn_c;
 
 public:
   Sniffer();
