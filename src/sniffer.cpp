@@ -4,7 +4,6 @@
 #include <pcap/pcap.h>
 #include <sys/types.h>
 
-
 std::vector<packet_struct *> Sniffer::pkt; // packet
 View *Sniffer::view;                       // view
 
@@ -14,9 +13,6 @@ Sniffer::Sniffer() {
   dumper = NULL;
   status = Init;
   findAllDevs();
-  // std::string fn = "../data/" + currentDataTime() + ".pcap";
-  // fn_c = fn.c_str();
-  // dumpfile = pcap_dump_open(handle, fn_c);
 }
 
 Sniffer::~Sniffer() {
@@ -74,23 +70,16 @@ bool Sniffer::getDevInfo() {
 void Sniffer::getView(View *viewObj) { view = viewObj; }
 
 void Sniffer::sniff() {
-  // status = Start;
   std::string fn = "../data/" + currentDataTime() + ".pcap";
   const char *fn_c = fn.c_str();
   dumpfile = pcap_dump_open(handle, fn_c);
   while (TRUE) {
     if (status == Start) {
-      // fn_c = fn.c_str();
-      // dumpfile = pcap_dump_open(handle, fn_c);
       pcap_dispatch(handle, -1, get_packet, (unsigned char *)dumpfile);
-      // pcap_dump_close(dumpfile);
     } else if (status == Stop) {
       LOG("Stop");
-      // pcap_dump_close(dumpfile);
-      // fn = "../data/" + currentDataTime() + ".pcap";
     } else {
       LOG("Initiating...");
-      // fn = "../data/" + currentDataTime() + ".pcap";
     }
   }
 }

@@ -26,6 +26,7 @@ protected:
   static std::vector<packet_struct *> pkt; // packet
   static View *view;                       // view
   pcap_dumper_t *dumpfile;
+  std::promise<void> sniffing_thread_stopped;
   // const char *fn_c;
 
 public:
@@ -35,6 +36,10 @@ public:
   void getDevName(const char *devName);
   bool getDevInfo();
   void getView(View *viewObj);
+  void Select_dev(const char *devName);
+  void startSniffing();
+  void stopSniffing();
+  void stop();
 
 private:
   static void get_packet(u_char *args, const struct pcap_pkthdr *header,

@@ -11,10 +11,18 @@ $> sudo apt install qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools
 $> sudo apt install libpcap-dev
 ```
 
-Run
+Run with GUI
 -----
 ```bash
 $> cd build
 $> chmod +x ./build.sh
 $> ./bin/trafficat
+```
+
+Run with CLI
+-----
+```bash
+$> cd build
+$> chmod +x ./clsniff.sh
+$> ./bin/clsniff
 ```
