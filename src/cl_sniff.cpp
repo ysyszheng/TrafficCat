@@ -68,7 +68,7 @@ void Sniffer::sniff() {
   const char *fn_c = fn.c_str();
   dumpfile = pcap_dump_open(handle, fn_c);
   while (TRUE) {
-    if (shouldStop) {
+    if (shouldStop || status == Stop) {
       break;
     }
     if (status == Start) {
@@ -90,6 +90,7 @@ void Sniffer::stop() {
     }
     sniffing_thread_stopped.get_future().wait();
 }
+
 
 void Sniffer::get_packet(u_char *args, const struct pcap_pkthdr *header,
                          const u_char *packet) {
@@ -222,44 +223,4 @@ void Sniffer::handle_arp(const u_char *packet, packet_struct *pkt_p) {
   pkt_p->net_hdr.arp_hdr = (arp_header *)(packet + SIZE_ETHERNET);
   pkt_p->len += SIZE_ARP;
   return;
-}
-
-int main() {
-    Sniffer sniffer;
-    bool getdev = sniffer.findAllDevs();
-    if (!getdev) {
-        LOG("No device found!");
-        return 0;
-    }
-    char name[100];
-    printf("Enter the device you select: ");
-    scanf("%s", name);  // 读取字符串
-    sniffer.Select_dev(name);
-
-    // Start a new thread for sniffing
-    std::thread snifferThread([&sniffer]() { sniffer.sniff(); });
-
-    // Command loop
-    std::string command;
-    while (true) {
-        std::cout << "Enter your command (start/stop/exit): ";
-        std::cin >> command;
-        if (command == "start") {
-            sniffer.startSniffing();
-        } else if (command == "stop") {
-            sniffer.stopSniffing();
-        } else if (command == "exit") {
-            sniffer.stop();
-            break;
-        } else {
-            std::cout << "Unknown command: " << command << "\n";
-        }
-    }
-
-    // Join the sniffing thread
-    if (snifferThread.joinable()) {
-        snifferThread.join();
-    }
-
-    return 0;
 }

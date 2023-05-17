@@ -23,7 +23,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         ../src/catch.cpp \
         ../src/utils/utils.cpp \ 
-        ../src/cl_sniff.cpp
+        ../src/cl_sniff.cpp \
+        ../src/cl_main.cpp
 
 HEADERS += \
         ../src/catch.h \
