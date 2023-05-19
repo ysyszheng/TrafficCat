@@ -26,3 +26,15 @@ $> cd build
 $> chmod +x ./clsniff.sh
 $> ./bin/clsniff
 ```
+
+Run kdd99extractor
+-----
+```bash
+$> sudo kdd99_feature_extractor/build-files/src/kdd99extractor
+```
+
+Run kdd99extractor and save in output.txt
+-----
+```bash
+$> sudo kdd99_feature_extractor/build-files/src/kdd99extractor > output.txt
+```
