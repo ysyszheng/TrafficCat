@@ -52,17 +52,122 @@ if traffic_data is not None:
     values_df = pd.DataFrame(values, columns=['counts'], index=timestamp_strings)
 
     # ----------------- protocol counts -----------------
-    # 统计协议数量
+    # 统计协议数量以及其层级
     protocol_counts = {}
+    protocol_hierarchy = {}
     for data in traffic_data:
         protocols = data['_parser']['proto']
-        for protocol in protocols:
+        for i, protocol in enumerate(protocols):
             protocol_counts[protocol] = protocol_counts.get(protocol, 0) + 1
+            if i < len(protocols) - 1:
+                if protocol not in protocol_hierarchy:
+                    protocol_hierarchy[protocol] = []
+                if protocols[i + 1] not in protocol_hierarchy[protocol]:
+                    protocol_hierarchy[protocol].append(protocols[i + 1])
 
-    # 将协议数量转换为列表形式
-    protocol_labels = list(protocol_counts.keys())
-    protocol_values = list(protocol_counts.values())
-    protocol_df = pd.DataFrame(protocol_values, columns=['counts'], index=protocol_labels)
+    # 获取协议层级
+    def get_protocol_hierarchy(protocol):
+        hierarchy = []
+        while protocol:
+            if protocol not in ['eth', 'ethertype']:
+                hierarchy.append(protocol)
+            for parent, children in protocol_hierarchy.items():
+                if protocol in children:
+                    protocol = parent
+                    break
+            else:
+                break
+        hierarchy.reverse()
+        return hierarchy
+    
+    # 定义协议颜色
+    protocol_colors = {
+        'ip': '#6495ED',
+        'tcp': '#7FFF00',
+        'udp': '#FF4500',
+        'icmp': '#FFD700',
+        'http': '#ADFF2F',
+        'https': '#FF69B4',
+        'arp': '#D2691E',
+        'rarp': '#1E90FF',
+        'ipv6': '#DC143C',
+        'igmp': '#20B2AA',
+        'ippc': '#2F4F4F',
+        'sctp': '#FFDAB9',
+        'ftp': '#B0C4DE',
+        'ssh': '#ADD8E6',
+        'telnet': '#87CEFA',
+        'smtp': '#87CEEB',
+        'dns': '#6A5ACD',
+        'dhcp': '#708090',
+        'smb': '#4682B4',
+        'pop3': '#4169E1',
+        'imap': '#40E0D0',
+        'snmp': '#EE82EE',
+        'ldap': '#D8BFD8',
+        'tftp': '#DDA0DD',
+        'rip': '#9932CC',
+        'tls': '#9400D3',      
+    }
+    
+    # 获取协议树
+    def get_protocol_tree(protocol_counts):
+        protocol_tree = {"name": "root", "children": []}
+
+        def add_to_tree(protocol, count):
+            current_level = protocol_tree
+            protocol_parts = get_protocol_hierarchy(protocol)
+
+            for part in protocol_parts:
+                if part not in [child['name'] for child in current_level['children']]:
+                    new_part = {"name": part, "value": count, "children": [], "itemStyle": {"color": protocol_colors.get(part, '#808080')}}
+                    current_level['children'].append(new_part)
+                    current_level = new_part
+                else:
+                    for child in current_level['children']:
+                        if child['name'] == part:
+                            child['value'] += count
+                            current_level = child
+
+        for protocol, count in protocol_counts.items():
+            add_to_tree(protocol, count)
+        return protocol_tree
+
+    protocol_tree = get_protocol_tree(protocol_counts)
+
+    option = {
+        "series": {
+            "type": "sunburst",
+            "highlightPolicy": "ancestor",
+            "data": [child for child in protocol_tree['children'] if child['name'] not in ['eth', 'ethertype']],
+            "radius": [0, "95%"],
+            "sort": None,
+            "label": {
+                "fontSize": 12,
+                "overflow": "ellipsis"
+            },
+            "levels": [
+                {},
+                {
+                    "r0": "15%",
+                    "r": "35%",
+                    "itemStyle": {"borderWidth": 2},
+                    "label": {"rotate": "tangential"},
+                },
+                {
+                    "r0": "35%",
+                    "r": "70%",
+                    "label": {"align": "right"},
+                },
+                {
+                    "r0": "70%",
+                    "r": "72%",
+                    "label": {"position": "outside", "padding": 3, "silent": False},
+                    "itemStyle": {"borderWidth": 3}
+                }
+            ],
+        },
+    }
 
     # ----------------- source ip link dst ip -----------------
     nodes = set()
@@ -191,12 +296,16 @@ if traffic_data is not None:
     # ----------------- ui -----------------
     st.markdown("## Time Series")
     st.line_chart(values_df, use_container_width=True)
+
     st.write('## Traffic Data')
     st.dataframe(df)
-    st.markdown("## Protocol Counts")
-    st.bar_chart(protocol_df, use_container_width=True)
+    
+    st.markdown("## Protocol Sunburst")
+    st_echarts(option, height="700px")
+
     st.write('## Traffic Graph')
     st_pyecharts(graph)
+
     col1, col2 = st.columns([1, 1])
     with col1:
         st.write('## Packet Size')
