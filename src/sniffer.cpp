@@ -18,8 +18,6 @@ Sniffer::Sniffer() {
 
 Sniffer::~Sniffer() {
   pcap_dump_close(dumpfile);
-  std::string fn_json = fn + ".json";
-  system(("tshark -r \'" + fn + ".pcap\' -T json > " + fn_json).c_str());
   if (allDev_ptr)
     pcap_freealldevs(allDev_ptr);
   if (handle)
