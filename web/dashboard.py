@@ -65,6 +65,11 @@ if traffic_data is not None:
                 if protocols[i + 1] not in protocol_hierarchy[protocol]:
                     protocol_hierarchy[protocol].append(protocols[i + 1])
 
+    # 将协议数量转换为列表形式
+    protocol_labels = list(protocol_counts.keys())
+    protocol_values = list(protocol_counts.values())
+    protocol_df = pd.DataFrame(protocol_values, columns=['counts'], index=protocol_labels)
+
     # 获取协议层级
     def get_protocol_hierarchy(protocol):
         hierarchy = []
@@ -299,6 +304,9 @@ if traffic_data is not None:
 
     st.write('## Traffic Data')
     st.dataframe(df)
+
+    st.markdown("## Protocol Counts")
+    st.bar_chart(protocol_df, use_container_width=True)
     
     st.markdown("## Protocol Sunburst")
     st_echarts(option, height="700px")
