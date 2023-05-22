@@ -1,5 +1,6 @@
 # user cfg
 # data/
+__pycache__/
 
 # Prerequisites
 *.d
