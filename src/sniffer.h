@@ -27,6 +27,7 @@ protected:
   static View *view;                       // view
   pcap_dumper_t *dumpfile;
   std::promise<void> sniffing_thread_stopped;
+  std::string fn;
   // const char *fn_c;
 
 public:

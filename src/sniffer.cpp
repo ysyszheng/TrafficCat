@@ -3,6 +3,7 @@
 #include "utils/utils.h"
 #include <pcap/pcap.h>
 #include <sys/types.h>
+#include <cstdlib>
 
 std::vector<packet_struct *> Sniffer::pkt; // packet
 View *Sniffer::view;                       // view
@@ -17,6 +18,8 @@ Sniffer::Sniffer() {
 
 Sniffer::~Sniffer() {
   pcap_dump_close(dumpfile);
+  std::string fn_json = fn + ".json";
+  system(("tshark -r \'" + fn + ".pcap\' -T json > " + fn_json).c_str());
   if (allDev_ptr)
     pcap_freealldevs(allDev_ptr);
   if (handle)
@@ -70,8 +73,9 @@ bool Sniffer::getDevInfo() {
 void Sniffer::getView(View *viewObj) { view = viewObj; }
 
 void Sniffer::sniff() {
-  std::string fn = "../data/" + currentDataTime() + ".pcap";
-  const char *fn_c = fn.c_str();
+  fn = "../data/" + currentDataTime();
+  std::string fn_pcap = fn + ".pcap";
+  const char *fn_c = fn_pcap.c_str();
   dumpfile = pcap_dump_open(handle, fn_c);
   while (TRUE) {
     if (status == Start) {

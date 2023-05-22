@@ -7,12 +7,12 @@ import pandas as pd
 from pyecharts import options as opts
 from pyecharts.charts import Graph, Pie
 
-st.title("Traffic Analysis")
+st.title("Traffic Analysis Dash Board")
 
 # ----------------- upload file ----------------
 traffic_data = None
 with st.sidebar:
-    uploaded_file = st.file_uploader("Choose a file")
+    uploaded_file = st.file_uploader("Choose pcap json file")
     if uploaded_file is not None:
         traffic_data = json.load(uploaded_file)
 
