@@ -146,11 +146,15 @@ void Sniffer::get_packet(u_char *args, const struct pcap_pkthdr *header,
     break;
   }
 
+  free(packet_cpy);
+
   if (pkt_p->net_type != Unet) { // Known types
     cnt++;
     pkt_p->no = cnt;
 
     Sniffer::pkt.push_back(pkt_p);
+
+    delete pkt_p;
   }
   return;
 }
