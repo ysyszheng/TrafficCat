@@ -146,7 +146,11 @@ void Sniffer::get_packet(u_char *args, const struct pcap_pkthdr *header,
 
     Sniffer::pkt.push_back(pkt_p);
     view->add_pkt(pkt_p);
+
   }
+
+  free(packet_cpy);
+  delete pkt_p;
   return;
 }
 
