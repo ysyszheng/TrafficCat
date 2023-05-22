@@ -3,12 +3,9 @@ from streamlit_echarts import st_echarts, st_pyecharts
 import json
 from datetime import datetime
 from dateutil import parser
-import matplotlib.pyplot as plt
 import pandas as pd
-import networkx as nx
 from pyecharts import options as opts
 from pyecharts.charts import Graph, Pie
-from sniffer import get_dev_list
 
 st.title("Traffic Analysis")
 
