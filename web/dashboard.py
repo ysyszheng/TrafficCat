@@ -189,11 +189,6 @@ if traffic_data is not None:
     df = pd.DataFrame([data['_parser'] for data in traffic_data])
 
     # ----------------- ui -----------------
-    # with st.sidebar:
-    #     dev_options = st.selectbox(
-    #         'Select device',
-    #         get_dev_list()
-    #     )
     st.markdown("## Time Series")
     st.line_chart(values_df, use_container_width=True)
     st.write('## Traffic Data')
