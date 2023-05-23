@@ -1,4 +1,4 @@
-# MinIO 安装和配置指南
+# ubuntu中部署minio
 
 ## 下载和安装
 
