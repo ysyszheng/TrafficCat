@@ -30,12 +30,12 @@ $> ./bin/clsniff
 Run kdd99extractor
 -----
 ```bash
-$> sudo kdd99_feature_extractor/build-files/src/kdd99extractor
+$> sudo kdd/kdd99extractor
 ```
 
 Run kdd99extractor and analysis
 -----
 ```bash
-$> sudo kdd99_feature_extractor/build-files/src/kdd99extractor > output.txt
-$> python3 kdd99_feature_extractor/analysis/inference/main.py
+$> sudo kdd/kdd99extractor > kdd/inference/input/output.txt
+$> python3 kdd/inference/main.py
 ```

@@ -20,10 +20,10 @@ def encode_text_dummy(df, name, encoder=False):
     if encoder is False:
         encoder = LabelEncoder()
         encoder.fit(df[name])
-        with open("/home/hanzhipeng/TrafficCat/kdd99_feature_extractor/analysis/inference/encoder/" + name + "_encoder.pkl", "wb") as f:
+        with open("kdd/inference/encoder/" + name + "_encoder.pkl", "wb") as f:
             pickle.dump(encoder, f)
     else:
-        with open("/home/hanzhipeng/TrafficCat/kdd99_feature_extractor/analysis/inference/encoder/" + name + "_encoder.pkl", "rb") as f:
+        with open("kdd/inference/encoder/" + name + "_encoder.pkl", "rb") as f:
             encoder = pickle.load(f)
     df[name] = encoder.transform(df[name])
 

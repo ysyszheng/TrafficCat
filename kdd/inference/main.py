@@ -33,9 +33,9 @@ class NN(nn.Module):
 
 if __name__ == "__main__":
     model = NN()
-    model.load_state_dict(torch.load("/home/hanzhipeng/TrafficCat/kdd99_feature_extractor/analysis/inference/model/faashark.pt"))
+    model.load_state_dict(torch.load("kdd/inference/model/faashark.pt"))
 
-    data = preprocess.read_data("/home/hanzhipeng/TrafficCat/kdd99_feature_extractor/analysis/inference/input/output.txt")
+    data = preprocess.read_data("kdd/inference/input/output.txt")
     data = torch.tensor(data, dtype=torch.float)
 
     model.eval()
