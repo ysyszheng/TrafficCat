@@ -11,10 +11,12 @@ st.title("Traffic Analysis Dash Board")
 
 # ----------------- upload file ----------------
 traffic_data = None
-with st.sidebar:
-    uploaded_file = st.file_uploader("Choose pcap json file")
-    if uploaded_file is not None:
-        traffic_data = json.load(uploaded_file)
+#with st.sidebar:
+#    uploaded_file = st.file_uploader("Choose pcap json file")
+#    if uploaded_file is not None:
+#        traffic_data = json.load(uploaded_file)
+
+traffic_data = json.load(open('data/traffic.json', 'r'))
 
 if traffic_data is not None:
     # ----------------- preprocessing -----------------
