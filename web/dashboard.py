@@ -306,7 +306,7 @@ if traffic_data is not None:
         if idx.isdigit():
             idx = int(idx)
             if idx >= 0 and idx < len(df):
-                st.write(traffic_data[i]['_source'])
+                st.write(traffic_data[idx]['_source'])
             else:
                 st.error('Invalid index')
         else:
