@@ -31,8 +31,8 @@ def encode_text_dummy(df, name, encoder=False):
 def read_data(path):
     data = pd.read_csv(path, header=None)
     data.columns = [
-        "duration",  # 持续时间，范围是 [0, 58329]
-        "protocol_type",  # 协议类型，三种：TCP, UDP, ICMP
+        "duration",  # Duration, in the range [0, 58329]
+        "protocol_type",  # Protocol types, three: TCP, UDP, ICMP
         "service",  # 目标主机的网络服务类型，共有70种，如‘http_443′,‘http_8001′,‘imap4′等
         "flag",  # 连接正常或错误的状态，离散类型，共11种，如‘S0′,‘S1′,‘S2′等
         "src_bytes",  # 从源主机到目标主机的数据的字节数，范围是 [0,1379963888]
@@ -62,12 +62,12 @@ def read_data(path):
     ]
 
     if "oth_i" in data["service"].values:
-        # 存在匹配行，删除它们
+        # Matching rows exist, delete them
         matching_rows = data[data["service"] == "oth_i"]
         data = data.drop(matching_rows.index)
 
 
-    # 对每一项数据进行相应处理
+    # Each data item is processed accordingly
     encode_numeric_zscore(data, "duration")
     encode_text_dummy(data, "protocol_type", True)
     encode_text_dummy(data, "service", True)
