@@ -28,9 +28,15 @@ $> chmod +x ./clsniff.sh
 $> ./bin/clsniff
 ```
 
+Pcap to json
+-----
+```bash
+$> tshark -r data/traffic.pcap -T json > data/traffic.json
+```
+
 Run kdd99extractor and analysis
 -----
 ```bash
-$> sudo kdd/kdd99extractor data/traffic.pcap > kdd/inference/input/output.txt
+$> sudo kdd/kdd99extractor data/traffic.pcap > data/extractor.txt
 $> python3 kdd/inference/main.py
 ```
