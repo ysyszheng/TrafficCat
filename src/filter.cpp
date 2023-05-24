@@ -26,12 +26,15 @@ bool Filter::checkCommand(QString command) {
  */
 bool Filter::loadCommand(QString command) {
   query.clear();
+  // Check if the command is valid
   if (!checkCommand(command)) {
     return false;
   }
 
+  // Convert the command to a std::string
   std::string com = command.toStdString();
   std::size_t pos;
+  // Find the position of each option and store the data
   pos = com.find("-p ");
   if (pos < com.size())
     query.insert(std::make_pair(P, findWord(com, pos + 2)));
@@ -53,21 +56,33 @@ bool Filter::loadCommand(QString command) {
   return true;
 }
 
+/*
+ * launch filter to check if the packet meet the requirement
+ * return true if meet the requirement
+ */
 std::string Filter::findWord(std::string command, size_t pos) {
+  // Find the first non-space character
   size_t beg = command.find_first_not_of(std::string(" "), pos);
   size_t end = command.find_first_of(std::string(" "), beg);
+  // If the word is at the end of the command, set end to the end of the
   if (end >= command.size())
     end = command.find_first_of(std::string("\n"), beg);
 
   return command.substr(beg, end - beg);
 }
 
+/*
+ * launch filter to check if the packet meet the requirement
+ * return true if meet the requirement
+ */
 bool Filter::launchOneFilter(const packet_struct *tmpPacket) {
   QString src_IP = "";
   QString dest_IP = "";
+    // Check if the packet meet the requirement
   switch (tmpPacket->net_type) {
   case ARP: {
     int i;
+    // Convert the IP address to QString
     for (i = 0; i < 4; i++) {
       QString temp = QString::number(tmpPacket->net_hdr.arp_hdr->src_ip[i], 10);
       src_IP.append(temp);
@@ -84,11 +99,11 @@ bool Filter::launchOneFilter(const packet_struct *tmpPacket) {
     break;
   }
 
+  // Convert the IP address to QString
   case IPv4:
     src_IP = inet_ntoa(tmpPacket->net_hdr.ipv4_hdr->ip_src);
     dest_IP = inet_ntoa(tmpPacket->net_hdr.ipv4_hdr->ip_dst);
     break;
-
   case IPv6: {
     int i;
     for (i = 0; i < 8; i++) {
@@ -111,8 +126,8 @@ bool Filter::launchOneFilter(const packet_struct *tmpPacket) {
     break;
   }
 
+  // Convert the port number to QString
   QString Protocal;
-
   switch (tmpPacket->trs_type) {
   case UDP:
     Protocal = "UDP";
@@ -147,10 +162,12 @@ bool Filter::launchOneFilter(const packet_struct *tmpPacket) {
     }
   }
 
+  // Check if the packet meet the requirement
   bool flag = true;
   for (std::map<int, std::string>::iterator iQuery = query.begin();
        iQuery != query.end(); iQuery++) {
     switch (iQuery->first) {
+    // Check if the protocal is correct
     case P: {
       if (Protocal.toStdString().find(iQuery->second.data()) >
           Protocal.toStdString().length()) {
@@ -158,7 +175,7 @@ bool Filter::launchOneFilter(const packet_struct *tmpPacket) {
       }
       break;
     }
-
+    // Check if the source IP is correct
     case S: {
       std::string tmpSource = src_IP.toStdString();
       tmpSource = tmpSource.substr(0, tmpSource.find_first_of(':'));
@@ -167,7 +184,7 @@ bool Filter::launchOneFilter(const packet_struct *tmpPacket) {
       }
       break;
     }
-
+    // Check if the destination IP is correct
     case D: {
       std::string tmpDest = dest_IP.toStdString();
       tmpDest = tmpDest.substr(0, tmpDest.find_first_of(':'));
@@ -176,7 +193,7 @@ bool Filter::launchOneFilter(const packet_struct *tmpPacket) {
       }
       break;
     }
-
+    // Check if the source port is correct
     case SPORT: {
       if (tmpPacket->trs_type == TCP) {
         std::string tmpSPort =
@@ -186,6 +203,7 @@ bool Filter::launchOneFilter(const packet_struct *tmpPacket) {
         }
         break;
       } else if (tmpPacket->trs_type == UDP) {
+        // std::cout << "UDP" << std::endl;
         std::string tmpSPort =
             std::to_string(ntohs(tmpPacket->trs_hdr.udp_hdr->src_port));
         if (iQuery->second.find(tmpSPort.data()) != 0) {
@@ -197,7 +215,7 @@ bool Filter::launchOneFilter(const packet_struct *tmpPacket) {
         break;
       }
     }
-
+    // Check if the destination port is correct
     case DPORT: {
       if (tmpPacket->trs_type == TCP) {
         std::string tmpDPort =
@@ -218,7 +236,7 @@ bool Filter::launchOneFilter(const packet_struct *tmpPacket) {
         break;
       }
     }
-
+    // Check if the content is correct
     case C: {
       std::string text =
           store_content((u_char *)tmpPacket->eth_hdr, tmpPacket->len);
@@ -235,12 +253,14 @@ bool Filter::launchOneFilter(const packet_struct *tmpPacket) {
   return flag;
 }
 
+/* launch the filter */
 void Filter::launchFilter(View *view) {
   /* clear the tableView */
   view->clearView();
   int len = view->pkt.size();
   int i;
   bool flag;
+  /* add the packet to the tableView */
   for (i = 0; i < len; ++i) {
     flag = launchOneFilter(view->pkt[i]);
     if (flag)
