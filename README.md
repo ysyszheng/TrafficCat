@@ -10,27 +10,49 @@ $> sudo apt install build-essential
 $> sudo apt install qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools
 $> sudo apt install libpcap-dev
 $> sudo apt install tshark
+$> pip install streamlit
+$> pip install pandas
+$> pip install scikit-learn
+$> pip install torch
 ```
 
-Run with GUI
+Sniffer: Run with GUI
 -----
 ```bash
 $> cd build
 $> chmod +x ./build.sh
+$> ./build.sh
 $> ./bin/trafficat
 ```
 
-Run with CLI
+Sniffer: Run with CLI
 -----
 ```bash
 $> cd build
 $> chmod +x ./clsniff.sh
+$> ./clsniff.sh
 $> ./bin/clsniff
+```
+
+Pcap to json
+-----
+```bash
+$> tshark -r data/traffic.pcap -T json > data/traffic.json
 ```
 
 Run kdd99extractor and analysis
 -----
 ```bash
-$> sudo kdd/kdd99extractor data/traffic.pcap > kdd/inference/input/output.txt
+$> sudo kdd/kdd99extractor data/traffic.pcap > data/extractor.txt
 $> python3 kdd/inference/main.py
+```
+
+Run the entire system in command line
+-----
+```bash
+$> cd build
+$> chmod +x ./clsniff.sh ../run.sh
+$> ./clsniff.sh
+$> cd ..
+$> ./run.sh
 ```
