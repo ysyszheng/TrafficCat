@@ -175,7 +175,7 @@ if traffic_data is not None:
     }
 
     # ----------------- source ip link dst ip -----------------
-    nodes = set()
+    nodes = []
     edges = []
 
     # 构建节点和边
@@ -185,27 +185,23 @@ if traffic_data is not None:
     for data in traffic_data:
         src_ip = data['_parser'].get('src_ip')
         dst_ip = data['_parser'].get('dst_ip')
-        
+
         if src_ip and dst_ip:
             if src_ip not in node_index:
                 node_index[src_ip] = index
+                nodes.append({"name": src_ip, "symbolSize": 10})
                 index += 1
             if dst_ip not in node_index:
                 node_index[dst_ip] = index
+                nodes.append({"name": dst_ip, "symbolSize": 10})
                 index += 1
-            
-            nodes.add(src_ip)
-            nodes.add(dst_ip)
-            
-            edges.append((node_index[src_ip], node_index[dst_ip]))
 
-    # 转换为列表形式
-    nodes = list(nodes)
+            edges.append({"source": src_ip, "target": dst_ip})
 
     # 创建图表
     graph = (
-        Graph()
-        .add("", nodes, edges, layout="circular", linestyle_opts=opts.LineStyleOpts(curve=0.2))
+        Graph(init_opts=opts.InitOpts(width="1000px", height="600px"))
+        .add("", nodes, edges, repulsion=8000, layout='force', is_roam=True)
         .set_global_opts(
             tooltip_opts=opts.TooltipOpts(trigger="item", trigger_on="mousemove"),
             legend_opts=opts.LegendOpts(is_show=False),
@@ -217,6 +213,7 @@ if traffic_data is not None:
             )
         )
     )
+
 
     # ----------------- size -----------------
     # 统计包大小区间内的包数量
@@ -312,7 +309,8 @@ if traffic_data is not None:
     st_echarts(option, height="700px")
 
     st.write('## Traffic Graph')
-    st_pyecharts(graph)
+    st_pyecharts(graph, height="600px")
+
 
     col1, col2 = st.columns([1, 1])
     with col1:
