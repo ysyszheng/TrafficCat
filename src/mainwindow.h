@@ -8,6 +8,7 @@
 #include "utils/utils.h"
 #include "view.h"
 
+// Main window
 namespace Ui {
 class MainWindow;
 }
@@ -17,10 +18,12 @@ class MainWindow : public QMainWindow {
   Q_OBJECT
 
 public:
+  // Constructor for the MainWindow class
   explicit MainWindow(QWidget *parent = nullptr);
   ~MainWindow();
 
 private slots:
+  // Slot for the clicked signal
   void showMainWnd();
   void start_catch();
   void stop_catch();

@@ -8,6 +8,7 @@
 std::vector<packet_struct *> Sniffer::pkt; // packet
 View *Sniffer::view;                       // view
 
+// Callback function for pcap_loop
 Sniffer::Sniffer() {
   dev = NULL;
   allDev_ptr = NULL;
@@ -16,6 +17,7 @@ Sniffer::Sniffer() {
   findAllDevs();
 }
 
+// Find all available devices
 Sniffer::~Sniffer() {
   pcap_dump_close(dumpfile);
   if (allDev_ptr)
@@ -24,19 +26,23 @@ Sniffer::~Sniffer() {
     pcap_close(handle);
 }
 
+// Find all available devices
 bool Sniffer::findAllDevs() {
   char errbuf[PCAP_ERRBUF_SIZE];
   pcap_findalldevs(&allDev_ptr, errbuf);
 
+  // pcap_if_t *allDev_ptr;
   if (allDev_ptr == NULL) {
     ERROR_INFO(errbuf);
     exit(1);
   }
 
+  // Print all available devices
   if (PRINT_DEV_NAME) {
     printf("Available devices: \n");
   }
 
+  // Store all available devices in a vector
   for (pcap_if_t *pdev = allDev_ptr; pdev; pdev = pdev->next) {
     if (PRINT_DEV_NAME) {
       std::cout << "  @: " << pdev->name << std::endl;
@@ -46,18 +52,20 @@ bool Sniffer::findAllDevs() {
   return TRUE;
 }
 
+// Select a device to sniff
 void Sniffer::getDevName(const char *devName) { dev = devName; }
 
+// Open the device for sniffing
 bool Sniffer::getDevInfo() {
   char errbuf[PCAP_ERRBUF_SIZE];
-
+ 
   if (pcap_lookupnet(dev, &net, &mask, errbuf) == -1) {
     ERROR_INFO(errbuf);
     net = 0;
     mask = 0;
     return FALSE;
   }
-
+  // Open the device for sniffing
   if (PRINT_DEV_INFO) {
     printf("Device Info:\n");
     printf("NET: %d.%d.%d.%d\tmask: %d.%d.%d.%d\n", (net >> 24) & 0xff,
@@ -68,13 +76,16 @@ bool Sniffer::getDevInfo() {
   return TRUE;
 }
 
+
 void Sniffer::getView(View *viewObj) { view = viewObj; }
 
+// Start sniffing
 void Sniffer::sniff() {
   fn = "../data/" + currentDataTime();
   std::string fn_pcap = fn + ".pcap";
   const char *fn_c = fn_pcap.c_str();
   dumpfile = pcap_dump_open(handle, fn_c);
+  // pcap_dump_open(handle, fn_c);
   while (TRUE) {
     if (status == Start) {
       pcap_dispatch(handle, -1, get_packet, (unsigned char *)dumpfile);
@@ -86,26 +97,33 @@ void Sniffer::sniff() {
   }
 }
 
+// Callback function for pcap_loop
 void Sniffer::get_packet(u_char *args, const struct pcap_pkthdr *header,
                          const u_char *packet) {
   pcap_dump(args, header, packet);
   static size_t cnt = 0;
 
+  // Create a new packet
   packet_struct *pkt_p = new packet_struct;
   pkt_p->len = SIZE_ETHERNET;
   pkt_p->time = currentDataTime();
   pkt_p->eth_hdr = (ethernet_header *)(packet);
-
+  
+  // Get the type of the network layer
   switch (ntohs(pkt_p->eth_hdr->ether_type)) {
   case ETHERTYPE_IP: {
     pkt_p->net_type = IPv4;
     handle_ipv4(packet, pkt_p);
     break;
   }
+
+  // case ETHERTYPE_IPV6:
   case ETHERTYPE_ARP:
     pkt_p->net_type = ARP;
     handle_arp(packet, pkt_p);
     break;
+
+  // case ETHERTYPE_IPV6:
   case ETHERTYPE_IPV6:
     pkt_p->net_type = IPv6;
     handle_ipv6(packet, pkt_p);
@@ -115,22 +133,28 @@ void Sniffer::get_packet(u_char *args, const struct pcap_pkthdr *header,
     break;
   }
 
+  // Handle the packet
   void *packet_cpy = malloc(pkt_p->len);
   memcpy(packet_cpy, packet, pkt_p->len);
-
+  
+  // Add the packet to the vector
   pkt_p->len = SIZE_ETHERNET;
   pkt_p->eth_hdr = (ethernet_header *)(packet_cpy);
 
+  // Get the type of the network layer
   switch (ntohs(pkt_p->eth_hdr->ether_type)) {
+  // case ETHERTYPE_IP: {
   case ETHERTYPE_IP: {
     pkt_p->net_type = IPv4;
     handle_ipv4((const u_char *)packet_cpy, pkt_p);
     break;
   }
+  // case ETHERTYPE_ARP:
   case ETHERTYPE_ARP:
     pkt_p->net_type = ARP;
     handle_arp((const u_char *)packet_cpy, pkt_p);
     break;
+  // case ETHERTYPE_IPV6:
   case ETHERTYPE_IPV6:
     pkt_p->net_type = IPv6;
     handle_ipv6((const u_char *)packet_cpy, pkt_p);
@@ -140,6 +164,7 @@ void Sniffer::get_packet(u_char *args, const struct pcap_pkthdr *header,
     break;
   }
 
+  // Handle the packet
   if (pkt_p->net_type != Unet) { // Known types
     cnt++;
     pkt_p->no = cnt;
@@ -154,11 +179,13 @@ void Sniffer::get_packet(u_char *args, const struct pcap_pkthdr *header,
   return;
 }
 
+// Handle ipv4 packet
 void Sniffer::handle_ipv4(const u_char *packet, packet_struct *pkt_p) {
   pkt_p->net_hdr.ipv4_hdr = (ipv4_header *)(packet + SIZE_ETHERNET);
   long size_ip = IPv4_HL(pkt_p->net_hdr.ipv4_hdr) * 4;
   pkt_p->len += size_ip;
 
+  // Get the type of the transport layer
   switch (pkt_p->net_hdr.ipv4_hdr->ip_p) {
   case IPPROTO_TCP:
     pkt_p->trs_type = TCP;
@@ -182,15 +209,16 @@ void Sniffer::handle_ipv4(const u_char *packet, packet_struct *pkt_p) {
   }
 
   pkt_p->len -= size_ip; // sub size_ip, because ip_len include it
-  pkt_p->len += ntohs(pkt_p->net_hdr.ipv4_hdr->ip_len); // TODO
+  pkt_p->len += ntohs(pkt_p->net_hdr.ipv4_hdr->ip_len); 
 
   return;
 }
 
+// Handle ipv6 packet
 void Sniffer::handle_ipv6(const u_char *packet, packet_struct *pkt_p) {
   pkt_p->net_hdr.ipv6_hdr = (ipv6_header *)(packet + SIZE_ETHERNET);
   pkt_p->len += SIZE_IPv6;
-
+  // Get the type of the transport layer
   switch (pkt_p->net_hdr.ipv6_hdr->next_header) { // TODO
   case IPPROTO_TCP:
     pkt_p->trs_type = TCP;
@@ -218,6 +246,7 @@ void Sniffer::handle_ipv6(const u_char *packet, packet_struct *pkt_p) {
   return;
 }
 
+// Handle arp packet
 void Sniffer::handle_arp(const u_char *packet, packet_struct *pkt_p) {
   pkt_p->net_hdr.arp_hdr = (arp_header *)(packet + SIZE_ETHERNET);
   pkt_p->len += SIZE_ARP;

@@ -2,6 +2,10 @@
 #include "utils/hdr.h"
 #include "utils/utils.h"
 
+/*
+ * Constructor for the MainWindow class
+ *  parent Pointer to the parent widget
+ */
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
   // Ui config
@@ -36,6 +40,9 @@ MainWindow::MainWindow(QWidget *parent)
   connect(devwindow, SIGNAL(subWndClosed()), this, SLOT(showMainWnd()));
 }
 
+/**
+ * @brief Destructor for the MainWindow class
+ */
 MainWindow::~MainWindow() {
   delete ui;
   delete filter;
@@ -56,7 +63,7 @@ void MainWindow::showMainWnd() {
   emit sig();
   this->show();
 }
-
+// Filter
 void MainWindow::start_catch() {
   LOG("Start");
   sniffer->status = Start;
@@ -73,7 +80,9 @@ void MainWindow::clear_catch() {
   view->clearView();
 }
 
-// Menu
+/**
+ * Save the captured packets to a file
+ */
 void MainWindow::setMenuBar(QMenuBar *mBar) {
   // QMenu *pFile = mBar->addMenu("Files");
   // QAction *pOpen = pFile->addAction("Open");
@@ -117,6 +126,10 @@ void MainWindow::on_filter_textChanged(const QString &command) {
   }
 }
 
+/**
+ * MainWindow::on_filter_Pressed
+ * when filter button is pressed, load the command and launch the filter.
+ */
 void MainWindow::on_filter_Pressed() {
   if (ui->filter_rule->text() == tr("-h")) {
     QMessageBox::about(this, tr("The Usage of filter"),
@@ -131,18 +144,24 @@ void MainWindow::on_filter_Pressed() {
   filter->launchFilter(view);
 }
 
+/**
+ * MainWindow::ip_reassemble
+ * reassemble the IP packets
+ */
 void MainWindow::save_file() {
   LOG("Save file");
   QDateTime time = QDateTime::currentDateTime();
   QString dateTime = time.toString("MM-dd_hh-mm-ss");
   QString timeName = QString("%1.log").arg(dateTime);
 
+  // get the file name 
   QString fileName = QFileDialog::getSaveFileName(
       this, tr("Save Network Packet"), "../test/log/" + timeName,
       tr("Log File (*.log);;All Files (*)"));
+  // if the file name is empty, return
   if (fileName.isEmpty())
     return;
-  else { // TODO
+  else { 
     QFile file(fileName);
     if (!file.open(QIODevice::WriteOnly)) {
       QMessageBox::information(this, tr("Unable to open file"),
@@ -153,8 +172,10 @@ void MainWindow::save_file() {
     // out.setVersion(QDataStream::Qt_4_5);
     QTextStream out(&file);
     out.setCodec("UTF-8");
+    // out << QString::fromStdString("Time: ").toUtf8()
+    sniffer->status = Stop; 
 
-    sniffer->status = Stop; // TODO
+    // write the packets to the file
     for (auto &pkt : view->pkt) {
       out << QString::fromStdString("Time: ").toUtf8()
           << QString::fromStdString(pkt->time).toUtf8()
@@ -173,43 +194,55 @@ void MainWindow::save_file() {
 
 /* IP reassmble function */
 void MainWindow::ip_reassemble() {
+  // get the selected packet
   QItemSelectionModel *select = ui->tableView->selectionModel();
+
+  // if no packet is selected, return
   if (select->selectedRows().empty()) {
     QMessageBox::critical(this, tr("Warning"), tr("Please select a packet"));
     return;
   } else {
+    // get the row number of the selected packet
     int row = select->selectedIndexes().at(0).row();
     const packet_struct *packet = view->pkt[row];
+    // check if the packet is a IP packet
     if (packet->net_type != IPv4) {
       QMessageBox::critical(this, tr("Warning"), tr("Not a IP packet"));
     } else if (((ntohs(packet->net_hdr.ipv4_hdr->ip_off) & IP_DF) >> 14) == 1) {
       QMessageBox::critical(this, tr("Warning"), tr("Not a Fragment packet"));
     } else {
+      // clear the textBrowser
       ui->textBrowser->clear();
       int len;
       int iplen = IPv4_HL(packet->net_hdr.ipv4_hdr) * 4;
       void *content, *content_new;
       std::vector<const packet_struct *> repkt;
       uint16_t id = ntohs(packet->net_hdr.ipv4_hdr->ip_id);
+      // find all the packets with the same id
       for (auto &item : view->pkt) {
         if (ntohs(item->net_hdr.ipv4_hdr->ip_id) == id) {
           repkt.push_back(item);
         }
       }
+      // sort the packets by offset
       sort(repkt.begin(), repkt.end(), ipcmp);
+      // allocate memory for the reassembled packet
       content = malloc(
           repkt.back()->len +
           (ntohs(repkt.back()->net_hdr.ipv4_hdr->ip_off) & IP_OFFMASK) * 8);
       switch (packet->trs_type) {
+      // if the packet is a TCP packet
       case TCP:
         for (auto &item : repkt) {
           LOG((ntohs(item->net_hdr.ipv4_hdr->ip_off) & IP_OFFMASK));
+          // if the packet is the first fragment
           if ((ntohs(item->net_hdr.ipv4_hdr->ip_off) & IP_OFFMASK) == 0) {
             memcpy(content, item->trs_hdr.tcp_hdr,
                    item->len - SIZE_ETHERNET - iplen);
             len = item->len - SIZE_ETHERNET - iplen;
             content_new = (u_char *)content + len;
           } else {
+            // if the packet is not the first fragment
             memcpy(content_new, (u_char *)(item->trs_hdr.tcp_hdr),
                    item->len - SIZE_ETHERNET - iplen);
             len += item->len - SIZE_ETHERNET - iplen;
@@ -217,31 +250,37 @@ void MainWindow::ip_reassemble() {
           }
         }
         break;
+      // if the packet is a UDP packet
       case UDP:
         for (auto &item : repkt) {
           LOG((ntohs(item->net_hdr.ipv4_hdr->ip_off) & IP_OFFMASK));
+          // if the packet is the first fragment
           if ((ntohs(item->net_hdr.ipv4_hdr->ip_off) & IP_OFFMASK) == 0) {
             memcpy(content, item->trs_hdr.udp_hdr,
                    item->len - SIZE_ETHERNET - iplen);
             len = item->len - SIZE_ETHERNET - iplen;
             content_new = (u_char *)content + len;
           } else {
+            // if the packet is not the first fragment
             memcpy(content_new, (u_char *)(item->trs_hdr.udp_hdr),
                    item->len - SIZE_ETHERNET - iplen);
             len += item->len - SIZE_ETHERNET - iplen;
             content_new = (u_char *)content + len;
           }
         }
-        break;
+        break
+      // if the packet is a ICMP packet
       case ICMP:
         for (auto &item : repkt) {
           LOG((ntohs(item->net_hdr.ipv4_hdr->ip_off) & IP_OFFMASK));
+          // if the packet is the first fragment
           if ((ntohs(item->net_hdr.ipv4_hdr->ip_off) & IP_OFFMASK) == 0) {
             memcpy(content, item->trs_hdr.icmp_hdr,
                    item->len - SIZE_ETHERNET - iplen);
             len = item->len - SIZE_ETHERNET - iplen;
             content_new = (u_char *)content + len;
           } else {
+            // if the packet is not the first fragment
             memcpy(content_new, (u_char *)(item->trs_hdr.icmp_hdr),
                    item->len - SIZE_ETHERNET - iplen);
             len += item->len - SIZE_ETHERNET - iplen;
@@ -249,15 +288,18 @@ void MainWindow::ip_reassemble() {
           }
         }
         break;
+      // if the packet is a IGMP packet
       case IGMP:
         for (auto &item : repkt) {
           LOG((ntohs(item->net_hdr.ipv4_hdr->ip_off) & IP_OFFMASK));
+          // if the packet is the first fragment
           if ((ntohs(item->net_hdr.ipv4_hdr->ip_off) & IP_OFFMASK) == 0) {
             memcpy(content, item->trs_hdr.igmp_hdr,
                    item->len - SIZE_ETHERNET - iplen);
             len = item->len - SIZE_ETHERNET - iplen;
             content_new = (u_char *)content + len;
           } else {
+            // if the packet is not the first fragment
             memcpy(content_new, (u_char *)(item->trs_hdr.igmp_hdr),
                    item->len - SIZE_ETHERNET - iplen);
             len += item->len - SIZE_ETHERNET - iplen;
@@ -277,11 +319,14 @@ void MainWindow::ip_reassemble() {
 
 /* file reassmble function */
 void MainWindow::file_reassemble() {
+  // check if the packet is selected
   QItemSelectionModel *select = ui->tableView->selectionModel();
   if (select->selectedRows().empty()) {
     QMessageBox::critical(this, tr("Warning"), tr("Please select a packet"));
     return;
   } else {
+
+    // check if the packet is a TCP packet
     int row = select->selectedIndexes().at(0).row();
     const packet_struct *packet = view->pkt[row];
     if (packet->trs_type != TCP) {
@@ -289,31 +334,39 @@ void MainWindow::file_reassemble() {
     } else if (((ntohs(packet->net_hdr.ipv4_hdr->ip_off) & IP_DF) >> 14) == 1) {
       QMessageBox::critical(this, tr("Warning"), tr("Not a Fragment packet"));
     } else {
+      // clear the text browser
       ui->textBrowser->clear();
       int len;
       int iplen = IPv4_HL(packet->net_hdr.ipv4_hdr) * 4;
       void *content, *content_new;
       std::vector<const packet_struct *> repkt;
+
+      // find all the fragments of the packet
       uint16_t id = ntohs(packet->net_hdr.ipv4_hdr->ip_id);
       for (auto &item : view->pkt) {
         if (ntohs(item->net_hdr.ipv4_hdr->ip_id) == id) {
           repkt.push_back(item);
         }
       }
+
+      // sort the fragments
       sort(repkt.begin(), repkt.end(), ipcmp);
       content = malloc(
           repkt.back()->len +
           (ntohs(repkt.back()->net_hdr.ipv4_hdr->ip_off) & IP_OFFMASK) * 8);
       switch (packet->trs_type) {
+      // if the packet is a TCP packet
       case TCP:
         for (auto &item : repkt) {
           LOG((ntohs(item->net_hdr.ipv4_hdr->ip_off) & IP_OFFMASK));
+          // if the packet is the first fragment
           if ((ntohs(item->net_hdr.ipv4_hdr->ip_off) & IP_OFFMASK) == 0) {
             memcpy(content, item->trs_hdr.tcp_hdr,
                    item->len - SIZE_ETHERNET - iplen);
             len = item->len - SIZE_ETHERNET - iplen;
             content_new = (u_char *)content + len;
           } else {
+            // if the packet is not the first fragment
             memcpy(content_new, (u_char *)(item->trs_hdr.tcp_hdr),
                    item->len - SIZE_ETHERNET - iplen);
             len += item->len - SIZE_ETHERNET - iplen;
@@ -321,15 +374,18 @@ void MainWindow::file_reassemble() {
           }
         }
         break;
+      // if the packet is a UDP packet
       case UDP:
         for (auto &item : repkt) {
           LOG((ntohs(item->net_hdr.ipv4_hdr->ip_off) & IP_OFFMASK));
           if ((ntohs(item->net_hdr.ipv4_hdr->ip_off) & IP_OFFMASK) == 0) {
+            // if the packet is the first fragment
             memcpy(content, item->trs_hdr.udp_hdr,
                    item->len - SIZE_ETHERNET - iplen);
             len = item->len - SIZE_ETHERNET - iplen;
             content_new = (u_char *)content + len;
           } else {
+            // if the packet is not the first fragment
             memcpy(content_new, (u_char *)(item->trs_hdr.udp_hdr),
                    item->len - SIZE_ETHERNET - iplen);
             len += item->len - SIZE_ETHERNET - iplen;
@@ -337,15 +393,18 @@ void MainWindow::file_reassemble() {
           }
         }
         break;
+      // if the packet is a ICMP packet
       case ICMP:
         for (auto &item : repkt) {
           LOG((ntohs(item->net_hdr.ipv4_hdr->ip_off) & IP_OFFMASK));
           if ((ntohs(item->net_hdr.ipv4_hdr->ip_off) & IP_OFFMASK) == 0) {
+            // if the packet is the first fragment
             memcpy(content, item->trs_hdr.icmp_hdr,
                    item->len - SIZE_ETHERNET - iplen);
             len = item->len - SIZE_ETHERNET - iplen;
             content_new = (u_char *)content + len;
           } else {
+            // if the packet is not the first fragment
             memcpy(content_new, (u_char *)(item->trs_hdr.icmp_hdr),
                    item->len - SIZE_ETHERNET - iplen);
             len += item->len - SIZE_ETHERNET - iplen;
@@ -353,15 +412,18 @@ void MainWindow::file_reassemble() {
           }
         }
         break;
+      // if the packet is a IGMP packet
       case IGMP:
         for (auto &item : repkt) {
           LOG((ntohs(item->net_hdr.ipv4_hdr->ip_off) & IP_OFFMASK));
           if ((ntohs(item->net_hdr.ipv4_hdr->ip_off) & IP_OFFMASK) == 0) {
+            // if the packet is the first fragment
             memcpy(content, item->trs_hdr.igmp_hdr,
                    item->len - SIZE_ETHERNET - iplen);
             len = item->len - SIZE_ETHERNET - iplen;
             content_new = (u_char *)content + len;
           } else {
+            // if the packet is not the first fragment
             memcpy(content_new, (u_char *)(item->trs_hdr.igmp_hdr),
                    item->len - SIZE_ETHERNET - iplen);
             len += item->len - SIZE_ETHERNET - iplen;

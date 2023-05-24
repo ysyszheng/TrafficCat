@@ -13,9 +13,11 @@
 #define DPORT 4 /* dest port */
 #define C 5     /* packet content */
 
+// Filter window
 class Filter : public QObject {
   Q_OBJECT
 public:
+  // Constructor for the Filter class
   Filter();
   ~Filter();
   bool checkCommand(QString command);
@@ -24,6 +26,7 @@ public:
   bool launchOneFilter(const packet_struct *packet);
 
 private:
+  // Query structure
   std::map<int, std::string> query;
   std::string findWord(std::string command, size_t pos);
 };
