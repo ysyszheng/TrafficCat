@@ -43,18 +43,18 @@ if traffic_data is not None:
     counts = {}
     for data in traffic_data:
         timestamp = data['_parser']['time']
-        timestamp = timestamp.replace(microsecond=0)  # 忽略毫秒和微秒部分
+        timestamp = timestamp.replace(microsecond=0)  # Ignore millisecond and microsecond parts
         counts[timestamp] = counts.get(timestamp, 0) + 1
 
-    # 转换为时间序列和数量列表
+    # Conversion to time series and volume lists
     timestamps = list(counts.keys())
-    timestamps.sort()  # 按时间排序
+    timestamps.sort()  # Sort by time
     timestamp_strings = [timestamp.strftime("%Y-%m-%d %H:%M:%S") for timestamp in timestamps]
     values = [counts[timestamp] for timestamp in timestamps]
     values_df = pd.DataFrame(values, columns=['counts'], index=timestamp_strings)
 
     # ----------------- protocol counts -----------------
-    # 统计协议数量以及其层级
+    # Number of statistical agreements and their hierarchy
     protocol_counts = {}
     protocol_hierarchy = {}
     for data in traffic_data:
@@ -67,12 +67,12 @@ if traffic_data is not None:
                 if protocols[i + 1] not in protocol_hierarchy[protocol]:
                     protocol_hierarchy[protocol].append(protocols[i + 1])
 
-    # 将协议数量转换为列表形式
+    # Converting the number of agreements into list form
     protocol_labels = list(protocol_counts.keys())
     protocol_values = list(protocol_counts.values())
     protocol_df = pd.DataFrame(protocol_values, columns=['counts'], index=protocol_labels)
 
-    # 获取协议层级
+    # Getting to the protocol level
     def get_protocol_hierarchy(protocol):
         hierarchy = []
         while protocol:
@@ -87,7 +87,7 @@ if traffic_data is not None:
         hierarchy.reverse()
         return hierarchy
     
-    # 定义协议颜色
+    # Defining protocol colours
     protocol_colors = {
         'ip': '#6495ED',
         'tcp': '#7FFF00',
@@ -117,14 +117,15 @@ if traffic_data is not None:
         'tls': '#9400D3',      
     }
     
-    # 获取协议树
+    # Get the protocol tree
     def get_protocol_tree(protocol_counts):
         protocol_tree = {"name": "root", "children": []}
-
+    
+        # Add to the protocol tree
         def add_to_tree(protocol, count):
             current_level = protocol_tree
             protocol_parts = get_protocol_hierarchy(protocol)
-
+            
             for part in protocol_parts:
                 if part not in [child['name'] for child in current_level['children']]:
                     new_part = {"name": part, "value": count, "children": [], "itemStyle": {"color": protocol_colors.get(part, '#808080')}}
@@ -141,7 +142,8 @@ if traffic_data is not None:
         return protocol_tree
 
     protocol_tree = get_protocol_tree(protocol_counts)
-
+    
+    # options for protocol tree
     option = {
         "series": {
             "type": "sunburst",
@@ -180,7 +182,7 @@ if traffic_data is not None:
     nodes = []
     edges = []
 
-    # 构建节点和边
+    # Constructing nodes and edges
     node_index = {}
     index = 0
 
@@ -200,7 +202,7 @@ if traffic_data is not None:
 
             edges.append({"source": src_ip, "target": dst_ip})
 
-    # 创建图表
+    # Creating charts
     graph = (
         Graph(init_opts=opts.InitOpts(width="1000px", height="600px"))
         .add("", nodes, edges, repulsion=8000, layout='circular', is_roam=True)
@@ -218,7 +220,7 @@ if traffic_data is not None:
 
 
     # ----------------- size -----------------
-    # 统计包大小区间内的包数量
+    # Count the number of packets in the packet size interval
     size_counts = {
         "0-49": 0,
         "50-99": 0,
@@ -249,7 +251,7 @@ if traffic_data is not None:
         else:
             size_counts["1000+"] += 1
 
-    # 将包大小区间和数量转换为列表形式
+    # Converting package size intervals and quantities to list form
     size_labels = list(size_counts.keys())
     size_values = list(size_counts.values())
 
@@ -266,7 +268,7 @@ if traffic_data is not None:
     )
 
     # ----------------- port access counts -----------------
-    # 统计端口被访问的次数
+    # Count the number of times the port has been accessed
     port_counts = {}
 
     for data in traffic_data:
@@ -277,11 +279,11 @@ if traffic_data is not None:
         if dst_port:
             port_counts[dst_port] = port_counts.get(dst_port, 0) + 1
 
-    # 将端口和访问次数转换为列表形式
+    # Converting ports and accesses into list form
     port_labels = list(port_counts.keys())
     port_values = list(port_counts.values())
 
-    # 创建饼状图
+    # Create a pie chart
     pie_port = (
         Pie()
         .add(
@@ -295,18 +297,18 @@ if traffic_data is not None:
     )
 
     # ----------------- src ip addr counts -----------------
-    # 统计源ip地址出现的次数
+    # Count the number of times the source ip address appears
     src_ip_counts = {}
     for data in traffic_data:
         src_ip = data['_parser'].get('src_ip')
         if src_ip:
             src_ip_counts[src_ip] = src_ip_counts.get(src_ip, 0) + 1
 
-    # 将ip地址和出现次数转换为列表形式
+    # Converting ip addresses and occurrences into list form
     src_ip_labels = list(src_ip_counts.keys())
     src_ip_values = list(src_ip_counts.values())
     
-    # 创建饼状图
+    # Create a pie chart
     pie_src_ip = (
         Pie()
         .add(
@@ -320,18 +322,18 @@ if traffic_data is not None:
     )
 
     # ----------------- dst ip addr counts -----------------
-    # 统计目的ip地址出现的次数
+    # Count the number of occurrences of the destination ip address
     dst_ip_counts = {}
     for data in traffic_data:
         dst_ip = data['_parser'].get('dst_ip')
         if dst_ip:
             dst_ip_counts[dst_ip] = dst_ip_counts.get(dst_ip, 0) + 1
 
-    # 将ip地址和出现次数转换为列表形式
+    # Converting ip addresses and occurrences into list form
     dst_ip_labels = list(dst_ip_counts.keys())
     dst_ip_values = list(dst_ip_counts.values())
 
-    # 创建饼状图
+    # Create a pie chart
     pie_dst_ip = (
         Pie()
         .add(
@@ -348,19 +350,19 @@ if traffic_data is not None:
     df = pd.DataFrame([data['_parser'] for data in traffic_data])
 
     # ----------------- label count -----------------
-    # 读取文本文件
+    # Reading text files
     file_path = "./data/label.txt"
     with open(file_path, "r") as file:
         lines = file.readlines()
 
-    # 统计每个label的数量
+    # Count the number of each label
     label_counts = pd.Series(lines).value_counts()
     label_percent = label_counts / label_counts.sum()
 
-    # 创建数据框
+    # Creating data boxes
     df_label = pd.DataFrame({"Label": label_counts.index, "Percent": label_percent.values})
 
-    # 绘制饼状图
+    # Drawing pie charts
     pie_chart = (
         Pie()
         .add("", df_label.values.tolist())
@@ -409,6 +411,6 @@ if traffic_data is not None:
         st.write('## Port Access')
         st_pyecharts(pie_port)
     
-    # 在Streamlit中显示饼状图
+    # Displaying pie charts in Streamlit
     st.write('## Traffic Label Analysis')
     st_pyecharts(pie_chart)
