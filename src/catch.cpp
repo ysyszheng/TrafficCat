@@ -1,18 +1,19 @@
 #include "catch.h"
 
+/***** print payload *****/
 void get_packet(u_char *args, const struct pcap_pkthdr *header,
                 const u_char *packet) {
 
   static size_t cnt = 1; /* packet counter */
-  const ethernet_header *ethernet;
-
+  const ethernet_header *ethernet; /* The ethernet header [1] */
   if (PRINT_PACKAGE_NUM) {
     printf("\nPacket number %zu:\n", cnt);
   }
   cnt++;
 
-  ethernet = (ethernet_header *)(packet);
+  ethernet = (ethernet_header *)(packet); /* define ethernet header */
 
+  /***** print source and destination MAC addresses *****/
   if (PRINT_ETHER_ADDR) {
     printf("  Src Host MAC Address: %s\n",
            ether_ntoa((const struct ether_addr *)&ethernet->ether_shost));
@@ -47,6 +48,7 @@ void get_packet(u_char *args, const struct pcap_pkthdr *header,
   return;
 }
 
+/***** handle ipv4 *****/
 void handle_ipv4(const u_char *packet) {
   const ipv4_header *ipv4;
   size_t size_ip;
@@ -99,6 +101,7 @@ void handle_ipv4(const u_char *packet) {
   return;
 }
 
+/***** handle ipv6 *****/
 void handle_ipv6(const u_char *packet) {
   const ipv6_header *ipv6;
   size_t size_ipv6;
@@ -158,6 +161,7 @@ void handle_ipv6(const u_char *packet) {
   return;
 }
 
+/***** handle arp *****/
 void handle_arp(const u_char *packet) {
   const arp_header *arp;
   // size_t size_arp;
@@ -194,25 +198,29 @@ void handle_arp(const u_char *packet) {
   return;
 }
 
+/***** handle tcp *****/
 void handle_tcp(const u_char *packet, size_t hdr_len, size_t total_len) {
+  /* define/compute tcp header offset */
   const tcp_header *tcp;
   const u_char *payload;
   size_t size_tcp;
   size_t size_payload;
-
+  // size_t size_hdr;
   tcp = (tcp_header *)(packet + SIZE_ETHERNET + hdr_len);
   size_tcp = TH_OFF(tcp) * 4;
 
+  /* define/compute tcp payload (segment) offset */
   if (size_tcp < 20) {
-    printf("      * Invalid TCP header length: %zu bytes\n", size_tcp);
+    printf("      * Invalid TCP header length: %zu bytes\n", size_tcp); 
     return;
   }
-
+  // size_hdr = SIZE_ETHERNET + hdr_len + size_tcp;
   printf("      Src port: %d\n", ntohs(tcp->th_sport));
   printf("      Dst port: %d\n", ntohs(tcp->th_dport));
-
+  /* define/compute tcp payload (segment) offset */
   payload = (u_char *)(packet + SIZE_ETHERNET + hdr_len + size_tcp);
 
+  /* compute tcp payload (segment) size */
   if (total_len > hdr_len + size_tcp) {
     size_payload = total_len - (hdr_len + size_tcp);
     printf("Payload (%zu bytes):\n", size_payload);
@@ -222,20 +230,24 @@ void handle_tcp(const u_char *packet, size_t hdr_len, size_t total_len) {
   return;
 }
 
+/***** handle udp *****/
 void handle_udp(const u_char *packet, size_t hdr_len, size_t total_len) {
   const udp_header *udp;
   const u_char *payload;
   size_t size_udp;
   size_t size_payload;
 
+  /* define/compute udp header offset */
   udp = (udp_header *)(packet + SIZE_ETHERNET + hdr_len);
   size_udp = 8; // TODO
 
   printf("      Src port: %d\n", ntohs(udp->src_port));
   printf("      Dst port: %d\n", ntohs(udp->dst_port));
 
+  /* define/compute udp payload (segment) offset */
   payload = (u_char *)(packet + SIZE_ETHERNET + hdr_len + size_udp);
 
+  /* compute udp payload (segment) size */
   if (total_len > hdr_len + size_udp) {
     size_payload = total_len - (hdr_len + size_udp);
     printf("Payload (%zu bytes):\n", size_payload);
@@ -245,15 +257,17 @@ void handle_udp(const u_char *packet, size_t hdr_len, size_t total_len) {
   return;
 }
 
+/***** handle icmp *****/
 void handle_icmp(const u_char *packet, size_t hdr_len, size_t total_len) {
   const u_char *payload;
   size_t size_icmp;
   size_t size_payload;
 
   size_icmp = 8; // TODO
-
+  /* define/compute icmp payload (segment) offset */
   payload = (u_char *)(packet + SIZE_ETHERNET + hdr_len + size_icmp);
 
+  /* compute icmp payload (segment) size */
   if (total_len > hdr_len + size_icmp) {
     size_payload = total_len - (hdr_len + size_icmp);
     printf("Payload (%zu bytes):\n", size_payload);
@@ -263,15 +277,17 @@ void handle_icmp(const u_char *packet, size_t hdr_len, size_t total_len) {
   return;
 }
 
+/***** handle igmp *****/
 void handle_igmp(const u_char *packet, size_t hdr_len, size_t total_len) {
   const u_char *payload;
   size_t size_igmp;
   size_t size_payload;
-
+  // size_t size_hdr;
   size_igmp = 80; // TODO
-
+  /* define/compute igmp payload (segment) offset */
   payload = (u_char *)(packet + SIZE_ETHERNET + hdr_len + size_igmp);
-
+  
+  /* compute igmp payload (segment) size */
   if (total_len > hdr_len + size_igmp) {
     size_payload = total_len - (hdr_len + size_igmp);
     printf("Payload (%zu bytes):\n", size_payload);

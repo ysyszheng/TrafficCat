@@ -52,6 +52,7 @@
 #define FALSE 0
 #define TRUE 1
 
+// Define print settings
 #define PRINT_DEV_NAME TRUE
 #define PRINT_DEV_INFO FALSE
 #define PRINT_PACKAGE_NUM FALSE
@@ -60,19 +61,25 @@
 #define PRINT_UNKNOW_IP_PROTO FALSE
 #define PRINT_UNKNOW_ARP_PROTO FALSE
 
+// Macro for printing error information
 #define ERROR_INFO(msg)                                                        \
   std::cout << "(" << __FILE__ << ":" << __LINE__ << ") " << __FUNCTION__      \
             << "(): " << msg << std::endl;
+// Macro for logging information
 #define LOG(msg)                                                               \
   std::cout << "(" << __FILE__ << ":" << __LINE__ << ") " << msg << std::endl;
 
+// Enumeration for flag states
 typedef enum { Init, Start, Stop } flag_t;
 
+// Function to print the payload of a packet
 void print_payload(const u_char *payload, size_t payload_len);
 std::string store_payload(const u_char *payload, long payload_len);
 std::string store_content(const u_char *payload, long payload_len);
 
+// Function to compare IP packets based on their IP offsets
 bool ipcmp(const packet_struct *a, const packet_struct *b);
+// Function to get the current date and time as a string
 const std::string currentDataTime();
 
 #endif // UTILS_H
