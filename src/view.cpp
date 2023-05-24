@@ -5,6 +5,7 @@
 #include "utils/hdr.h"
 #include <netinet/in.h>
 
+// View class
 View::View(QTableView *table, QTextBrowser *text, QTreeView *tree)
     : table(table), tree(tree), text(text), index(0) {
   // table
@@ -22,7 +23,7 @@ View::View(QTableView *table, QTextBrowser *text, QTreeView *tree)
                                       new QStandardItem(QObject::tr("Length")));
   TableModel->setHorizontalHeaderItem(6,
                                       new QStandardItem(QObject::tr("Info")));
-
+  // set table
   table->setModel(TableModel);
   table->setColumnWidth(0, table->width() / 12);
   table->setColumnWidth(1, table->width() / 5);
@@ -31,7 +32,7 @@ View::View(QTableView *table, QTextBrowser *text, QTreeView *tree)
   table->setColumnWidth(4, table->width() / 10);
   table->setColumnWidth(5, table->width() / 15);
   table->setColumnWidth(6, table->width() / 3.5);
-
+  
   table->verticalHeader()->setVisible(false);
   table->setSelectionBehavior(QTableView::SelectRows);
   table->setSelectionMode(QAbstractItemView::SingleSelection);

@@ -7,6 +7,7 @@
 #include "view.h"
 #include <pcap/pcap.h>
 
+// Sniffer
 class Sniffer : public QObject {
   Q_OBJECT
 
@@ -15,6 +16,7 @@ class Sniffer : public QObject {
   friend class View;
 
 protected:
+  // Sniffer status
   pcap_if_t *allDev_ptr;
   std::vector<pcap_if_t *> allDev_vec;
   const char *dev; // device name
@@ -31,23 +33,25 @@ protected:
   // const char *fn_c;
 
 public:
+  // Constructor for the Sniffer class
   Sniffer();
   ~Sniffer();
-  bool findAllDevs();
-  void getDevName(const char *devName);
-  bool getDevInfo();
-  void getView(View *viewObj);
-  void Select_dev(const char *devName);
-  void startSniffing();
-  void stopSniffing();
-  void stop();
+  bool findAllDevs(); // Find all available devices
+  void getDevName(const char *devName); // Select a device to sniff
+  bool getDevInfo();  // Open the device for sniffing
+  void getView(View *viewObj);  // Get the view object
+  void Select_dev(const char *devName); // Select a device to sniff
+  void startSniffing(); // Start sniffing
+  void stopSniffing();  // Stop sniffing
+  void stop();  // Stop sniffing
 
 private:
+  // Callback function for pcap_loop
   static void get_packet(u_char *args, const struct pcap_pkthdr *header,
-                         const u_char *packet);
-  static void handle_ipv4(const u_char *packet, packet_struct *pkt_p);
-  static void handle_arp(const u_char *packet, packet_struct *pkt_p);
-  static void handle_ipv6(const u_char *packet, packet_struct *pkt_p);
+                         const u_char *packet); // Callback function for pcap_loop
+  static void handle_ipv4(const u_char *packet, packet_struct *pkt_p);  // Handle IPv4 packet
+  static void handle_arp(const u_char *packet, packet_struct *pkt_p); // Handle ARP packet
+  static void handle_ipv6(const u_char *packet, packet_struct *pkt_p);  // Handle IPv6 packet
 
 public slots:
   void sniff();
