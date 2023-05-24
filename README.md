@@ -33,8 +33,9 @@ Run kdd99extractor
 $> sudo kdd99_feature_extractor/build-files/src/kdd99extractor
 ```
 
-Run kdd99extractor and save in output.txt
+Run kdd99extractor and analysis
 -----
 ```bash
 $> sudo kdd99_feature_extractor/build-files/src/kdd99extractor > output.txt
+$> python3 kdd99_feature_extractor/analysis/inference/main.py
 ```
