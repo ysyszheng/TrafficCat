@@ -35,7 +35,7 @@ if __name__ == "__main__":
     model = NN()
     model.load_state_dict(torch.load("kdd/inference/model/faashark.pt"))
 
-    data = preprocess.read_data("kdd/inference/input/output.txt")
+    data = preprocess.read_data("data/extractor.txt")
     data = torch.tensor(data, dtype=torch.float)
 
     model.eval()
@@ -71,6 +71,6 @@ if __name__ == "__main__":
     ]
     predicted_labels = [labels[i] for i in predicted]
 
-    with open("kdd/inference/output/output.txt", "w") as f:
+    with open("data/label.txt", "w") as f:
         for label in predicted_labels:
             f.write(label + "\n")

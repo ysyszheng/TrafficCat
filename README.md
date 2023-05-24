@@ -27,3 +27,10 @@ $> cd build
 $> chmod +x ./clsniff.sh
 $> ./bin/clsniff
 ```
+
+Run kdd99extractor and analysis
+-----
+```bash
+$> sudo kdd/kdd99extractor data/traffic.pcap > kdd/inference/input/output.txt
+$> python3 kdd/inference/main.py
+```
