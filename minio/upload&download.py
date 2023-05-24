@@ -1,23 +1,26 @@
 """
-使用python上传和下载文件
-需要预先安装minio库：pip install minio
+Uploading and downloading files using python
+The minio library needs to be pre-installed: pip install minio
 """
 
 from minio import Minio
 
-# 初始化minio客户端对象，连接minio服务，用户名和密码（admin/password）为配置文件中的内容
+# Initialize the minio client object to connect to the minio service
+# with the username and password (admin/password) as in the configuration file
 minio_client = Minio(
     "127.0.0.1:9000", access_key="admin", secret_key="password", secure=False
 )
 
 # upload
-# 上传文件的路径
+# Path to uploaded files
 uploadpath = "test.txt"
-# 向minio中的test桶中上传文件，minio中存储的文件名为object4，上传的文件路径为path
+# Upload a file to the test bucket in minio
+# the file name stored in minio is object4 and the path of the uploaded file is path
 minio_client.fput_object(bucket_name="test", object_name="object4", file_path=uploadpath)
 
 # download
-# 下载文件的路径
+# Path to download file
 downloadpath = "test'.txt"
-# 从minio中的test桶中下载文件，minio中存储的文件名为object4，下载的文件路径为path
+# Download the file from the test bucket in minio
+# the file name stored in minio is object4 and the path to the downloaded file is path
 minio_client.fget_object(bucket_name="test", object_name="object4", file_path=downloadpath)
