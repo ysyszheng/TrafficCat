@@ -64,7 +64,7 @@ void Sniffer::stopSniffing() {
 }
 
 void Sniffer::sniff() {
-  std::string fn = "../data/" + currentDataTime() + ".pcap";
+  std::string fn = "data/traffic.pcap";
   const char *fn_c = fn.c_str();
   dumpfile = pcap_dump_open(handle, fn_c);
   while (TRUE) {

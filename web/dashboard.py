@@ -292,6 +292,56 @@ if traffic_data is not None:
         .set_series_opts(label_opts=opts.LabelOpts(formatter="{b}: {c}"))
     )
 
+    # ----------------- src ip addr counts -----------------
+    # 统计源ip地址出现的次数
+    src_ip_counts = {}
+    for data in traffic_data:
+        src_ip = data['_parser'].get('src_ip')
+        if src_ip:
+            src_ip_counts[src_ip] = src_ip_counts.get(src_ip, 0) + 1
+
+    # 将ip地址和出现次数转换为列表形式
+    src_ip_labels = list(src_ip_counts.keys())
+    src_ip_values = list(src_ip_counts.values())
+    
+    # 创建饼状图
+    pie_src_ip = (
+        Pie()
+        .add(
+            "",
+            [list(z) for z in zip(src_ip_labels, src_ip_values)],
+        )
+        .set_global_opts(
+            legend_opts=opts.LegendOpts(is_show=False),
+        )
+        .set_series_opts(label_opts=opts.LabelOpts(formatter="{b}: {c}"))
+    )
+
+    # ----------------- dst ip addr counts -----------------
+    # 统计目的ip地址出现的次数
+    dst_ip_counts = {}
+    for data in traffic_data:
+        dst_ip = data['_parser'].get('dst_ip')
+        if dst_ip:
+            dst_ip_counts[dst_ip] = dst_ip_counts.get(dst_ip, 0) + 1
+
+    # 将ip地址和出现次数转换为列表形式
+    dst_ip_labels = list(dst_ip_counts.keys())
+    dst_ip_values = list(dst_ip_counts.values())
+
+    # 创建饼状图
+    pie_dst_ip = (
+        Pie()
+        .add(
+            "",
+            [list(z) for z in zip(dst_ip_labels, dst_ip_values)],
+        )
+        .set_global_opts(
+            legend_opts=opts.LegendOpts(is_show=False),
+        )
+        .set_series_opts(label_opts=opts.LabelOpts(formatter="{b}: {c}"))
+    )
+
     # ----------------- display traffic data as table -----------------
     df = pd.DataFrame([data['_parser'] for data in traffic_data])
 
@@ -321,6 +371,13 @@ if traffic_data is not None:
     st.write('## Traffic Graph')
     st_pyecharts(graph, height="600px")
 
+    col1, col2 = st.columns([1, 1])
+    with col1:
+        st.write('## Source IP Address')
+        st_pyecharts(pie_src_ip)
+    with col2:
+        st.write('## Destination IP Address')
+        st_pyecharts(pie_dst_ip)
 
     col1, col2 = st.columns([1, 1])
     with col1:
