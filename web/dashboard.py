@@ -201,7 +201,7 @@ if traffic_data is not None:
     # 创建图表
     graph = (
         Graph(init_opts=opts.InitOpts(width="1000px", height="600px"))
-        .add("", nodes, edges, repulsion=8000, layout='force', is_roam=True)
+        .add("", nodes, edges, repulsion=8000, layout='circular', is_roam=True)
         .set_global_opts(
             tooltip_opts=opts.TooltipOpts(trigger="item", trigger_on="mousemove"),
             legend_opts=opts.LegendOpts(is_show=False),
@@ -301,7 +301,17 @@ if traffic_data is not None:
 
     st.write('## Traffic Data')
     st.dataframe(df)
-
+    idx = st.text_input(f'Input traffic index in above table, from 0 to {len(df)-1}')
+    if idx:
+        if idx.isdigit():
+            idx = int(idx)
+            if idx >= 0 and idx < len(df):
+                st.write(traffic_data[i]['_source'])
+            else:
+                st.error('Invalid index')
+        else:
+            st.error('Invalid index')
+    
     st.markdown("## Protocol Counts")
     st.bar_chart(protocol_df, use_container_width=True)
     
