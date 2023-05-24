@@ -345,6 +345,26 @@ if traffic_data is not None:
     # ----------------- display traffic data as table -----------------
     df = pd.DataFrame([data['_parser'] for data in traffic_data])
 
+    # ----------------- label count -----------------
+    # 读取文本文件
+    file_path = "./data/label.txt"
+    with open(file_path, "r") as file:
+        lines = file.readlines()
+
+    # 统计每个label的数量
+    label_counts = pd.Series(lines).value_counts()
+    label_percent = label_counts / label_counts.sum()
+
+    # 创建数据框
+    df_label = pd.DataFrame({"Label": label_counts.index, "Percent": label_percent.values})
+
+    # 绘制饼状图
+    pie_chart = (
+        Pie()
+        .add("", df_label.values.tolist())
+        .set_series_opts(label_opts=opts.LabelOpts(formatter="{b}: {c}"))
+    )
+
     # ----------------- ui -----------------
     st.markdown("## Time Series")
     st.line_chart(values_df, use_container_width=True)
@@ -386,3 +406,7 @@ if traffic_data is not None:
     with col2:
         st.write('## Port Access')
         st_pyecharts(pie_port)
+    
+    # 在Streamlit中显示饼状图
+    st.write('## Traffic Label Analysis')
+    st_pyecharts(pie_chart)
