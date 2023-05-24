@@ -7,6 +7,7 @@
 #include <chrono>
 
 int main() {
+    // Find all available devices
     Sniffer sniffer;
     bool getdev = sniffer.findAllDevs();
     if (!getdev) {
@@ -15,7 +16,7 @@ int main() {
     }
     char name[100];
     printf("Enter the device you select: ");
-    scanf("%s", name);  // 读取字符串
+    scanf("%s", name);  // select the device
     sniffer.Select_dev(name);
 
     // Start a new thread for sniffing
@@ -27,6 +28,8 @@ int main() {
     while (true) {
       std::cout << "Enter your command (start/stop/exit): ";
       std::cin >> command;
+      
+      // Sleep for 1 second to let the sniffer thread finish its work
       if (command == "start") {
           sniffer.startSniffing();
       } else if (command == "stop") {
@@ -35,6 +38,7 @@ int main() {
           sniffer.stop();
           break;
       } else {
+        // Unknown command
           std::cout << "Unknown command: " << command << "\n";
       }
     }
