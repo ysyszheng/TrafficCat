@@ -5,7 +5,7 @@ from minio import Minio
 # Initialize the minio client object to connect to the minio service
 # with the username and password (admin/password) as in the configuration file
 minio_client = Minio(
-    "127.0.0.1:9001", access_key="admin", secret_key="password", secure=False
+    "127.0.0.1:9001", access_key="minioadmin", secret_key="minioadmin", secure=False
 )
 
 # Path to uploaded files
@@ -14,29 +14,29 @@ json_path = "data/traffic.json"
 label_path = "data/label.txt"
 extractor_path = "data/extractor.txt"
 
-# 获取系统时间,并转换为字符串,格式为:2021-01-01/00:00:00
-time = time.strftime("%Y-%m-%d/%H:%M:%S", time.localtime())
+# Get the system time and convert it to a string in the format: 2021_01_01_00_00_00
+time_str = time.strftime("%Y_%m_%d_%H_%M_%S", time.localtime())
 
-# 判断桶是否存在,不存在则创建
-# pcap桶
+# Determine if a bucket exists, create if it does not
+# bucket pcap
 if not minio_client.bucket_exists("pcap"):
     minio_client.make_bucket("pcap")
-# json桶
+# bucket json
 if not minio_client.bucket_exists("json"):
     minio_client.make_bucket("json")
-# label桶
+# bucket label
 if not minio_client.bucket_exists("label"):
     minio_client.make_bucket("label")
-# extractor桶
+# bucket extractor
 if not minio_client.bucket_exists("extractor"):
     minio_client.make_bucket("extractor")
 
 # Upload file to minio
-# 上传pcap文件，文件名为时间
-minio_client.fput_object(bucket_name="pcap", object_name="time", file_path=pcap_path)
-# 上传json文件，文件名为时间
-minio_client.fput_object(bucket_name="json", object_name="time", file_path=json_path)
-# 上传label文件，文件名为时间
-minio_client.fput_object(bucket_name="label", object_name="time", file_path=label_path)
-# 上传extractor文件，文件名为时间
-minio_client.fput_object(bucket_name="extractor", object_name="time", file_path=extractor_path)
+# Upload pcap file with time as file name
+minio_client.fput_object(bucket_name="pcap", object_name=time_str, file_path=pcap_path)
+# Upload json file with time as file name
+minio_client.fput_object(bucket_name="json", object_name=time_str, file_path=json_path)
+# Upload the label file with the time as the file name
+minio_client.fput_object(bucket_name="label", object_name=time_str, file_path=label_path)
+# Upload extractor file with time as file name
+minio_client.fput_object(bucket_name="extractor", object_name=time_str, file_path=extractor_path)
