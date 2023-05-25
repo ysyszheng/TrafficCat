@@ -3,7 +3,7 @@ TrafficCat
 
 Machine Learning Based Network Traffic Analysis and Audit System
 
-![flowchart](./assert/flowchart.png)
+![flowchart](./assets/flowchart.png)
 
 Dependencies
 -----
