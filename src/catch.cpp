@@ -209,6 +209,7 @@ void handle_tcp(const u_char *packet, size_t hdr_len, size_t total_len) {
   tcp = (tcp_header *)(packet + SIZE_ETHERNET + hdr_len);
   size_tcp = TH_OFF(tcp) * 4;
 
+  /* define/compute tcp payload (segment) offset */
   if (size_tcp < 20) {
     printf("      * Invalid TCP header length: %zu bytes\n", size_tcp); 
     return;
@@ -291,6 +292,5 @@ void handle_igmp(const u_char *packet, size_t hdr_len, size_t total_len) {
     printf("Payload (%zu bytes):\n", size_payload);
     print_payload(payload, size_payload);
   }
-
   return;
 }
