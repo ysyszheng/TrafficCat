@@ -154,11 +154,11 @@ void MainWindow::save_file() {
   QString dateTime = time.toString("MM-dd_hh-mm-ss");
   QString timeName = QString("%1.log").arg(dateTime);
 
-  // get the file name 
+  // get file name 
   QString fileName = QFileDialog::getSaveFileName(
       this, tr("Save Network Packet"), "../test/log/" + timeName,
       tr("Log File (*.log);;All Files (*)"));
-  // if the file name is empty, return
+  // if file name is empty, return
   if (fileName.isEmpty())
     return;
   else { 
@@ -189,6 +189,7 @@ void MainWindow::save_file() {
           << QString::fromStdString("\n").toUtf8();
     }
     sniffer->status = Start;
+    
   }
 }
 

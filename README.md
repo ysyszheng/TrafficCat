@@ -3,6 +3,8 @@ TrafficCat
 
 Machine Learning Based Network Traffic Analysis and Audit System
 
+![flowchart](./assets/flowchart.png)
+
 Dependencies
 -----
 ```bash
@@ -54,5 +56,6 @@ $> cd build
 $> chmod +x ./clsniff.sh ../run.sh
 $> ./clsniff.sh
 $> cd ..
+$> sudo ./build/bin/clsniff
 $> ./run.sh
 ```

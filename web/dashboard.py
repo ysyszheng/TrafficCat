@@ -369,7 +369,7 @@ if traffic_data is not None:
         .set_series_opts(label_opts=opts.LabelOpts(formatter="{b}: {c}"))
     )
 
-    # ----------------- ui -----------------
+    # ---------------- ui ----------------
     st.markdown("## Time Series")
     st.line_chart(values_df, use_container_width=True)
 
@@ -392,9 +392,6 @@ if traffic_data is not None:
     st.markdown("## Protocol Sunburst")
     st_echarts(option, height="700px")
 
-    st.write('## Traffic Graph')
-    st_pyecharts(graph, height="600px")
-
     col1, col2 = st.columns([1, 1])
     with col1:
         st.write('## Source IP Address')
@@ -412,5 +409,10 @@ if traffic_data is not None:
         st_pyecharts(pie_port)
     
     # Displaying pie charts in Streamlit
-    st.write('## Traffic Label Analysis')
-    st_pyecharts(pie_chart)
+    col1, col2 = st.columns([1, 1])
+    with col1:
+        st.write('## Traffic Graph')
+        st_pyecharts(graph)
+    with col2:
+        st.write('## Traffic Label')
+        st_pyecharts(pie_chart)
