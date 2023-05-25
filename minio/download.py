@@ -24,10 +24,12 @@ label_object_list = minio_client.list_objects("label")
 # List all objects in the extractor bucket
 extractor_object_list = minio_client.list_objects("extractor")
 
+
 # Download all the objects in the json bucket locally and merge them into one file
 file_name = "data/json_tmp/traffic-all.json"
 open(file_name, "w")
-# 在第一行写入[
+
+# In the first line write [
 with open(file_name, "a") as f:
     f.write("[")
 for json_object in json_object_list:
@@ -36,14 +38,17 @@ for json_object in json_object_list:
     )
     with open(file_name, "a") as f:
         with open(json_folder + json_object.object_name) as f1:
-            # 去掉第一行和最后一行的[]
+            # Remove [] from the first and last lines
             f.write(f1.read()[1:-2] + ",")
     print(json_object.object_name)
-# 在最后一行写入]
+
+# Write on the last line]
 with open(file_name, "a") as f:
     f.write("]")
+
 # Overwrite the original data/traffic.json with the new file
 os.rename(file_name, "data/traffic.json")
+
 
 # Download all objects in the label bucket locally and merge them into one file
 file_name = "data/label_tmp/label-all.txt"
@@ -56,8 +61,10 @@ for label_object in label_object_list:
         with open(label_folder + label_object.object_name, "rb") as f1:
             f.write(f1.read())
     print(label_object.object_name)
+
 # Overwrite the original data/label.txt with label-all.txt
 os.rename(file_name, "data/label.txt")
+
 
 # Download all the objects in the extractor bucket locally and merge them into one file
 file_name = "data/extractor_tmp/extractor-all.txt"
@@ -70,6 +77,7 @@ for extractor_object in extractor_object_list:
         with open(extractor_folder + extractor_object.object_name, "rb") as f1:
             f.write(f1.read())
     print(extractor_object.object_name)
+
 # Overwrite the original data/extractor.txt with extractor-all.txt
 os.rename(file_name, "data/extractor.txt")
 
