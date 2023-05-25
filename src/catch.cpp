@@ -205,7 +205,6 @@ void handle_tcp(const u_char *packet, size_t hdr_len, size_t total_len) {
   const u_char *payload;
   size_t size_tcp;
   size_t size_payload;
-  // size_t size_hdr;
   tcp = (tcp_header *)(packet + SIZE_ETHERNET + hdr_len);
   size_tcp = TH_OFF(tcp) * 4;
 
@@ -226,7 +225,6 @@ void handle_tcp(const u_char *packet, size_t hdr_len, size_t total_len) {
     printf("Payload (%zu bytes):\n", size_payload);
     print_payload(payload, size_payload);
   }
-
   return;
 }
 
