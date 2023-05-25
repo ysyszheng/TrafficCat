@@ -57,11 +57,16 @@ $> streamlit run web/dashboard.py
 
 Run the entire system in command line
 -----
+Capture traffic and display it immediately
 ```bash
 $> cd build
-$> chmod +x ./clsniff.sh ../run.sh
+$> chmod +x ./clsniff.sh ../run.sh ../all.sh
 $> ./clsniff.sh
 $> cd ..
 $> sudo ./build/bin/clsniff
 $> ./run.sh
+```
+Analyse all historic traffic(need to have run the above process at least once)
+```bash
+$> ./all.sh
 ```
