@@ -226,7 +226,6 @@ void handle_tcp(const u_char *packet, size_t hdr_len, size_t total_len) {
     printf("Payload (%zu bytes):\n", size_payload);
     print_payload(payload, size_payload);
   }
-
   return;
 }
 
@@ -293,6 +292,5 @@ void handle_igmp(const u_char *packet, size_t hdr_len, size_t total_len) {
     printf("Payload (%zu bytes):\n", size_payload);
     print_payload(payload, size_payload);
   }
-
   return;
 }
