@@ -49,6 +49,12 @@ $> sudo kdd/kdd99extractor data/traffic.pcap > data/extractor.txt
 $> python3 kdd/inference/main.py
 ```
 
+Run streamlit Page
+-----
+```bash
+$> streamlit run web/dashboard.py
+```
+
 Run the entire system in command line
 -----
 ```bash
