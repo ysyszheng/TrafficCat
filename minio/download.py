@@ -27,14 +27,21 @@ extractor_object_list = minio_client.list_objects("extractor")
 # Download all the objects in the json bucket locally and merge them into one file
 file_name = "data/json_tmp/traffic-all.json"
 open(file_name, "w")
+# 在第一行写入[
+with open(file_name, "a") as f:
+    f.write("[")
 for json_object in json_object_list:
     minio_client.fget_object(
         bucket_name="json", object_name=json_object.object_name, file_path=json_folder + json_object.object_name
     )
-    with open(file_name, "ab") as f:
-        with open(json_folder + json_object.object_name, "rb") as f1:
-            f.write(f1.read())
+    with open(file_name, "a") as f:
+        with open(json_folder + json_object.object_name) as f1:
+            # 去掉第一行和最后一行的[]
+            f.write(f1.read()[1:-2] + ",")
     print(json_object.object_name)
+# 在最后一行写入]
+with open(file_name, "a") as f:
+    f.write("]")
 # Overwrite the original data/traffic.json with the new file
 os.rename(file_name, "data/traffic.json")
 
