@@ -205,10 +205,10 @@ void handle_tcp(const u_char *packet, size_t hdr_len, size_t total_len) {
   const u_char *payload;
   size_t size_tcp;
   size_t size_payload;
+  // size_t size_hdr;
   tcp = (tcp_header *)(packet + SIZE_ETHERNET + hdr_len);
   size_tcp = TH_OFF(tcp) * 4;
 
-  /* define/compute tcp payload (segment) offset */
   if (size_tcp < 20) {
     printf("      * Invalid TCP header length: %zu bytes\n", size_tcp); 
     return;
