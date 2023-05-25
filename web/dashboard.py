@@ -369,7 +369,7 @@ if traffic_data is not None:
         .set_series_opts(label_opts=opts.LabelOpts(formatter="{b}: {c}"))
     )
 
-    # ----------------- ui -----------------
+    # ---------------- ui ----------------
     st.markdown("## Time Series")
     st.line_chart(values_df, use_container_width=True)
 
