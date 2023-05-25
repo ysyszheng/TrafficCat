@@ -1,6 +1,7 @@
 # user cfg
 # data/
 __pycache__/
+.vscode/
 
 # Prerequisites
 *.d
