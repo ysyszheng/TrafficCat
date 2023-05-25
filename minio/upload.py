@@ -5,7 +5,7 @@ from minio import Minio
 # Initialize the minio client object to connect to the minio service
 # with the username and password (admin/password) as in the configuration file
 minio_client = Minio(
-    "127.0.0.1:9000", access_key="admin", secret_key="password", secure=False
+    "127.0.0.1:9001", access_key="admin", secret_key="password", secure=False
 )
 
 # Path to uploaded files

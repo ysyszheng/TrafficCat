@@ -23,7 +23,7 @@ sudo mkdir /data
 sudo minio server /data --console-address ":9099"
 ```
 
-3. Access http://127.0.0.1:9000 in your browser. The system will automatically redirect to http://127.0.0.1:9099. Enter the default username and password (minioadmin/minioadmin) in the username and password fields to log in to the system.
+3. Access http://127.0.0.1:9000 in your browser. The system will automatically redirect to http://127.0.0.1:9002. Enter the default username and password (minioadmin/minioadmin) in the username and password fields to log in to the system.
 
 ## Configuring Auto-Start Service
 
@@ -41,7 +41,7 @@ sudo nano /etc/default/minio
 MINIO_VOLUMES="/data"
 
 # Listening port
-MINIO_OPTS="--address :9099 --console-address :9099"
+MINIO_OPTS="--address :9001 --console-address :9002"
 
 # Specify the default username and password, where the username must be longer than 3 characters
 MINIO_ROOT_USER="admin"
