@@ -55,7 +55,7 @@ bool Sniffer::findAllDevs() {
 // Select a device to sniff
 void Sniffer::getDevName(const char *devName) { dev = devName; }
 
-// Open the device for sniffing
+// Open device for sniffing
 bool Sniffer::getDevInfo() {
   char errbuf[PCAP_ERRBUF_SIZE];
  
@@ -65,7 +65,7 @@ bool Sniffer::getDevInfo() {
     mask = 0;
     return FALSE;
   }
-  // Open the device for sniffing
+  // Open device for sniffing
   if (PRINT_DEV_INFO) {
     printf("Device Info:\n");
     printf("NET: %d.%d.%d.%d\tmask: %d.%d.%d.%d\n", (net >> 24) & 0xff,
