@@ -66,7 +66,7 @@ $> cd ..
 $> sudo ./build/bin/clsniff
 $> ./run.sh
 ```
-Analyse all historic traffic(need to have run the above process at least once)
+Analyse all historical traffic(need to have run the above process at least once)
 ```bash
 $> ./all.sh
 ```
