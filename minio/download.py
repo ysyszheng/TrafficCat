@@ -41,7 +41,12 @@ for json_object in json_object_list:
             # Remove [] from the first and last lines
             f.write(f1.read()[1:-2] + ",")
     print(json_object.object_name)
-
+# 去掉最后一个逗号
+with open(file_name, 'rb+') as f:
+    f.seek(-1, os.SEEK_END)
+    if f.read(1) == b',':
+        f.seek(-1, os.SEEK_END)
+        f.truncate()
 # Write on the last line]
 with open(file_name, "a") as f:
     f.write("]")
