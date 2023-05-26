@@ -53,6 +53,9 @@ with open(file_name, "a") as f:
 
 # Overwrite the original data/traffic.json with the new file
 os.rename(file_name, "data/traffic.json")
+# Empty the json_tmp folder
+for file in os.listdir(json_folder):
+    os.remove(json_folder + file)
 
 
 # Download all objects in the label bucket locally and merge them into one file
@@ -70,6 +73,10 @@ for label_object in label_object_list:
 # Overwrite the original data/label.txt with label-all.txt
 os.rename(file_name, "data/label.txt")
 
+# Emptying the label_tmp folder
+for file in os.listdir(label_folder):
+    os.remove(label_folder + file)
+
 
 # Download all the objects in the extractor bucket locally and merge them into one file
 file_name = "minio/extractor_tmp/extractor-all.txt"
@@ -85,5 +92,9 @@ for extractor_object in extractor_object_list:
 
 # Overwrite the original data/extractor.txt with extractor-all.txt
 os.rename(file_name, "data/extractor.txt")
+# Empty the extractor_tmp folder
+for file in os.listdir(extractor_folder):
+    os.remove(extractor_folder + file)
+
 
 
