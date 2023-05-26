@@ -6,9 +6,9 @@ import os
 from minio import Minio
 
 # Path to uploaded files
-json_folder = "data/json_tmp/"
-label_folder = "data/label_tmp/"
-extractor_folder = "data/extractor_tmp/"
+json_folder = "minio/json_tmp/"
+label_folder = "minio/label_tmp/"
+extractor_folder = "minio/extractor_tmp/"
 
 # Initialize the minio client object to connect to the minio service
 # with the username and password (admin/password) as in the configuration file
@@ -26,7 +26,7 @@ extractor_object_list = minio_client.list_objects("extractor")
 
 
 # Download all the objects in the json bucket locally and merge them into one file
-file_name = "data/json_tmp/traffic-all.json"
+file_name = "minio/json_tmp/traffic-all.json"
 open(file_name, "w")
 
 # In the first line write [
@@ -56,7 +56,7 @@ os.rename(file_name, "data/traffic.json")
 
 
 # Download all objects in the label bucket locally and merge them into one file
-file_name = "data/label_tmp/label-all.txt"
+file_name = "minio/label_tmp/label-all.txt"
 open(file_name, "w")
 for label_object in label_object_list:
     minio_client.fget_object(
@@ -72,7 +72,7 @@ os.rename(file_name, "data/label.txt")
 
 
 # Download all the objects in the extractor bucket locally and merge them into one file
-file_name = "data/extractor_tmp/extractor-all.txt"
+file_name = "minio/extractor_tmp/extractor-all.txt"
 open(file_name, "w")
 for extractor_object in extractor_object_list:
     minio_client.fget_object(
