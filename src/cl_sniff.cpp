@@ -91,7 +91,7 @@ void Sniffer::sniff() {
       //LOG("Stop");
     } else {
       //LOG("Initiating...");
-    }
+    } 
   }
   sniffing_thread_stopped.set_value();
 }
