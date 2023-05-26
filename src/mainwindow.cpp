@@ -269,7 +269,7 @@ void MainWindow::ip_reassemble() {
             content_new = (u_char *)content + len;
           }
         }
-        break
+        break;
       // if the packet is a ICMP packet
       case ICMP:
         for (auto &item : repkt) {
