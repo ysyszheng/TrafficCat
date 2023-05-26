@@ -14,8 +14,8 @@ json_path = "data/traffic.json"
 label_path = "data/label.txt"
 extractor_path = "data/extractor.txt"
 
-# Get the system time and convert it to a string in the format: 2021_01_01_00_00_00
-time_str = time.strftime("%Y_%m_%d_%H_%M_%S", time.localtime())
+# Get the system time and convert it to a string in the format: 2021.01.01_00:00:00
+time_str = time.strftime("%Y.%m.%d_%H:%M:%S", time.localtime())
 
 # Determine if a bucket exists, create if it does not
 # bucket pcap
@@ -33,10 +33,10 @@ if not minio_client.bucket_exists("extractor"):
 
 # Upload file to minio
 # Upload pcap file with time as file name
-minio_client.fput_object(bucket_name="pcap", object_name=time_str, file_path=pcap_path)
+minio_client.fput_object(bucket_name="pcap", object_name="pcap"+time_str, file_path=pcap_path)
 # Upload json file with time as file name
-minio_client.fput_object(bucket_name="json", object_name=time_str, file_path=json_path)
+minio_client.fput_object(bucket_name="json", object_name="json"+time_str, file_path=json_path)
 # Upload the label file with the time as the file name
-minio_client.fput_object(bucket_name="label", object_name=time_str, file_path=label_path)
+minio_client.fput_object(bucket_name="label", object_name="label"+time_str, file_path=label_path)
 # Upload extractor file with time as file name
-minio_client.fput_object(bucket_name="extractor", object_name=time_str, file_path=extractor_path)
+minio_client.fput_object(bucket_name="extractor", object_name="extractor"+time_str, file_path=extractor_path)

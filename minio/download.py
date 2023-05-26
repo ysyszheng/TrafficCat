@@ -40,8 +40,8 @@ for json_object in json_object_list:
         with open(json_folder + json_object.object_name) as f1:
             # Remove [] from the first and last lines
             f.write(f1.read()[1:-2] + ",")
-    print(json_object.object_name)
-# 去掉最后一个逗号
+    # print("download traffic file: "+json_object.object_name)
+# Remove the last comma
 with open(file_name, 'rb+') as f:
     f.seek(-1, os.SEEK_END)
     if f.read(1) == b',':
@@ -65,7 +65,7 @@ for label_object in label_object_list:
     with open(file_name, "ab") as f:
         with open(label_folder + label_object.object_name, "rb") as f1:
             f.write(f1.read())
-    print(label_object.object_name)
+    # print("download label file: "+label_object.object_name)
 
 # Overwrite the original data/label.txt with label-all.txt
 os.rename(file_name, "data/label.txt")
@@ -81,7 +81,7 @@ for extractor_object in extractor_object_list:
     with open(file_name, "ab") as f:
         with open(extractor_folder + extractor_object.object_name, "rb") as f1:
             f.write(f1.read())
-    print(extractor_object.object_name)
+    # print("download extractor file: "+extractor_object.object_name)
 
 # Overwrite the original data/extractor.txt with extractor-all.txt
 os.rename(file_name, "data/extractor.txt")
