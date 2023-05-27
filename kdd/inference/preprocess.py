@@ -52,9 +52,13 @@ def read_data(path):
     ]
 
     #delete the invaild services
-    valid_services = ['aol', 'auth', 'bgp', 'courier', 'csnet_ns', 'ctf', 'daytime', 'discard', 'domain', 'domain_u', 'echo', 'eco_i', 'ecr_i', 'efs', 'exec', 'finger', 'ftp', 'ftp_data', 'gopher', 'harvest', 'hostnames', 'http', 'http_2784', 'http_443', 'imap4', 'IRC', 'iso_tsap', 'klogin', 'kshell', 'ldap', 'link', 'login', 'mtp', 'name', 'netbios_dgm', 'netbios_ns', 'netbios_ssn', 'netstat', 'nnsp', 'nntp', 'ntp_u', 'other', 'pm_dump', 'pop_2', 'pop_3', 'printer', 'private', 'red_i', 'remote_job', 'rje', 'shell', 'smtp', 'sql_net', 'ssh', 'sunrpc', 'supdup', 'systat', 'telnet', 'tftp_u', 'tim_i', 'time', 'urh_i', 'urp_i', 'uucp', 'uucp_path', 'vmnet', 'whois', 'X11', 'Z39_50']
- 
+
+    valid_services = ['uucp_path', 'uucp', 'supdup', 'whois', 'nnsp', 'pm_dump', 'tftp_u', 'tim_i', 'netbios_ssn', 'link', 'remote_job', 'shell', 'red_i', 'iso_tsap', 'other', 'Z39_50', 'eco_i', 'auth', 'ftp', 'finger', 'pop_3', 'daytime', 'nntp', 'X11', 'netbios_dgm', 'http_443', 'ldap', 'rje', 'ctf', 'discard', 'systat', 'netbios_ns', 'urh_i', 'ntp_u', 'hostnames', 'smtp', 'echo', 'name', 'courier', 'sql_net', 'IRC', 'urp_i', 'telnet', 'bgp', 'time', 'exec', 'mtp', 'ftp_data', 'domain', 'login', 'ssh', 'klogin', 'private', 'efs', 'pop_2', 'sunrpc', 'ecr_i', 'domain_u', 'vmnet', 'http', 'printer', 'csnet_ns', 'gopher', 'imap4', 'kshell', 'netstat']
+
     data = data[data["service"].isin(valid_services)]
+
+   
+
 
     
 
@@ -94,4 +98,4 @@ def read_data(path):
 
 
 if __name__ == "__main__":
-    read_data("./input/input_data.txt")
+    read_data("data/extractor.txt")
