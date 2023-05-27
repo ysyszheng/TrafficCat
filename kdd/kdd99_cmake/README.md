@@ -11,5 +11,6 @@
   `cmake --build ./build-files --target kdd99extractor -- -j 4`<br/><br/>
 4. Path to compiled project is:<br/>
   `build-files/src/kdd99extractor`<br/><br/>
-
+4. mv to TrafficCat/kdd/ is:<br/>
+  `mv build-files/src/kdd99extractor ../`<br/><br/>
 
