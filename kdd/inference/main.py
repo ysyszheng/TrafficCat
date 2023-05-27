@@ -37,8 +37,9 @@ if __name__ == "__main__":
     model.load_state_dict(torch.load(os.getcwd() + "/kdd/inference/model/faashark.pt"))
 
     data = preprocess.read_data("data/extractor.txt")
+    
     data = torch.tensor(data, dtype=torch.float)
-
+    
     model.eval()
     with torch.no_grad():
         outputs = model(data)
