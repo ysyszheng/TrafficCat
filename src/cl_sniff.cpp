@@ -111,7 +111,6 @@ void Sniffer::stop() {
 void Sniffer::get_packet(u_char *args, const struct pcap_pkthdr *header,
                          const u_char *packet) {
   pcap_dump(args, header, packet);
-  static size_t cnt = 0;
 
   // Create a new packet_struct
   packet_struct *pkt_p = new packet_struct;
@@ -174,14 +173,8 @@ void Sniffer::get_packet(u_char *args, const struct pcap_pkthdr *header,
   }
 
   free(packet_cpy);
+  delete pkt_p;
 
-  // If the packet is not a unknown type
-  if (pkt_p->net_type != Unet) { // Known types
-    cnt++;
-    pkt_p->no = cnt;
-    Sniffer::pkt.push_back(pkt_p);
-    delete pkt_p;
-  }
   return;
 }
 
