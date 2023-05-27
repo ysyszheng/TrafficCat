@@ -23,7 +23,7 @@ def read_data(path):
     data.columns = [
         "duration",  # 持续时间，范围是 [0, 58329]
         "protocol_type",  # 协议类型，三种：TCP, UDP, ICMP
-        "service",  # 目标主机的网络服务类型，共有70种，如‘http_443′,‘http_8001′,‘imap4′等
+        "service",  # 目标主机的网络服务类型，共有70种，如‘http_443′,‘imap4′等
         "flag",  # 连接正常或错误的状态，离散类型，共11种，如‘S0′,‘S1′,‘S2′等
         "src_bytes",  # 从源主机到目标主机的数据的字节数，范围是 [0,1379963888]
         "dst_bytes",  # 从目标主机到源主机的数据的字节数，范围是 [0.1309937401]
