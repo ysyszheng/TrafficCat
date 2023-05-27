@@ -221,16 +221,35 @@ namespace FeatureExtractor {
 		return urgent_packets;
 	}
 
-	const char *Conversation::get_service_str() const 
-	{
-		// Ensure size of strins matches number of values for enum at compilation time
+//new change: delete invaild service
+const char *valid_services[] = {
+    "aol", "auth", "bgp", "courier", "csnet_ns", "ctf", "daytime", "discard", "domain", "domain_u", "echo", "eco_i", "ecr_i", "efs", "exec",
+    "finger", "ftp", "ftp_data", "gopher", "harvest", "hostnames", "http", "http_2784", "http_443", "http_8001", "imap4", "IRC", "iso_tsap",
+    "klogin", "kshell", "ldap", "link", "login", "mtp", "name", "netbios_dgm", "netbios_ns", "netbios_ssn", "netstat", "nnsp", "nntp", "ntp_u",
+    "other", "pm_dump", "pop_2", "pop_3", "printer", "private", "red_i", "remote_job", "rje", "shell", "smtp", "sql_net", "ssh", "sunrpc",
+    "supdup", "systat", "telnet", "tftp_u", "tim_i", "time", "urh_i", "urp_i", "uucp", "uucp_path", "vmnet", "whois", "X11", "Z39_50"
+};
+
+const size_t num_valid_services = sizeof(valid_services) / sizeof(valid_services[0]);
+
+const char *Conversation::get_service_str() const 
+{
+    // Ensure size of strings matches number of values for enum at compilation time
 #ifdef static_assert
-		static_assert(sizeof(Conversation::SERVICE_NAMES) / sizeof(char *) == NUMBER_OF_SERVICES,
-			"Mapping of services to strings failed: number of string does not match number of values");
+    static_assert(num_valid_services == NUMBER_OF_SERVICES,
+        "Mapping of services to strings failed: number of strings does not match number of values");
 #endif
 
-		return SERVICE_NAMES[get_service()];
-	}
+    if (get_service() >= 0 && get_service() < num_valid_services) {
+        return valid_services[get_service()];
+    }
+    else {
+        // Conversation's service is not in the valid services list, delete the conversation
+        delete this;
+        return nullptr;
+    }
+}
+
 
 	const char * Conversation::get_protocol_type_str() const
 	{
