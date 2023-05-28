@@ -17,6 +17,7 @@
     * `traffic.pcap`: 嗅探器输出的流量文件
     * `traffic.json`: 流量文件(json格式)
 * `demo/`: **演示目录**
+    * `images/`: 截屏图片目录
     * `flowchart.png`: 系统架构图
     * `TrafficCat.pptx`: 系统演示PPT
     * `Run_in_Docker.mp4`: Docker运行演示视频
