@@ -390,8 +390,11 @@ if traffic_data is not None:
     st.bar_chart(protocol_df, use_container_width=True)
     
     st.markdown("## Protocol Sunburst")
-    st_echarts(option, height="700px")
-
+    st_echarts(option, height="600px")
+    
+    st.write('## Traffic Graph')
+    st_pyecharts(graph, height="600px")
+    
     col1, col2 = st.columns([1, 1])
     with col1:
         st.write('## Source IP Address')
@@ -408,11 +411,6 @@ if traffic_data is not None:
         st.write('## Port Access')
         st_pyecharts(pie_port)
     
-    # Displaying pie charts in Streamlit
-    col1, col2 = st.columns([1, 1])
-    with col1:
-        st.write('## Traffic Graph')
-        st_pyecharts(graph)
-    with col2:
-        st.write('## Traffic Label')
-        st_pyecharts(pie_chart)
+
+    st.write('## Traffic Label')
+    st_pyecharts(pie_chart, height="600px")
