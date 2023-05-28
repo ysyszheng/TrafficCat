@@ -79,6 +79,11 @@
 * `run.sh`: 运行脚本
 * `README.md`: **说明文档**
 
+## DOCKER 封装获取方式
+* [交大云盘下载](https://jbox.sjtu.edu.cn/l/U1Mduw)
+* 从Docker hub拉取：docker pull futuresjtu/traffic-v6
+
+
 ## 小组成员及贡献度
 
 郑宇森 520021911173 - 16.66%
