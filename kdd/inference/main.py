@@ -72,6 +72,8 @@ if __name__ == "__main__":
     ]
     predicted_labels = [labels[i] for i in predicted]
 
+    print(predicted_labels)
+
     # Save labels
     with open("data/label.txt", "w") as f:
         for label in predicted_labels:
